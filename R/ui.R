@@ -1,0 +1,82 @@
+
+# HARDCODED PARAMETERS
+variable.transforms <- c("None", "Natural Log", "Cubic Root")
+
+fluidPage(
+  headerPanel("Interactive Visualization"),
+  fluidRow(
+    column(4,
+           wellPanel(h4("Main"),
+                     selectInput("X.COL", "X-Variable", ""),
+                     selectInput("Y.COL", "Y-Variable", ""),
+                     selectInput("Z.COL", "Z-Variable", "")),
+           wellPanel(h4("Variable Transformations"),
+                     selectInput("X.TRANSFORM", "X-Variable Transformation", variable.transforms),
+                     selectInput("Y.TRANSFORM", "Y-Variable Transformation", variable.transforms),
+                     selectInput("Z.TRANSFORM", "Z-Variable Transformation", variable.transforms)),
+           wellPanel(h4("Data Filters"),
+                     selectInput("DIAGNOSIS.GROUP", "Diagnosis Group",
+                                 "", selected="", multiple=TRUE),
+                     selectInput("SEX.GROUP", "Sex Group",
+                                 "", selected="", multiple=TRUE),
+                     sliderInput("AGE.RANGE", "Age Range",
+                                 min=0, max=100, value=c(0, 100), step=5)),
+           wellPanel(h4("GAM Settings"),
+                     sliderInput("GAM.K", "Number of Knots (Flexibility)",
+                                 min=3, max=8, value=5, step=1),
+                     sliderInput("GAM.GAMMA", "Gamma (Smoothness)",
+                                 min=1, max=10, value=1, step=0.25),
+                     selectInput("GAM.COVARIATES", "Control for Biocovariates:",
+                                 "", multiple=TRUE),
+                     checkboxInput("GAM.STUDY", "Control for Study", FALSE))
+           ),
+    column(8,
+           tabsetPanel(type="tabs",
+                       tabPanel("Summary",
+                                h4("Description of selected data:"),
+                                tableOutput("summary_table"),
+                                plotOutput("subject_counts_by_study")),
+                       tabPanel("Histograms",
+                                plotOutput("x_histogram"),
+                                plotOutput("y_histogram"),
+                                plotOutput("z_histogram")),
+                       tabPanel("Scatterplots",
+                                plotOutput("xy_scatter", height="600px"),
+                                plotOutput("xz_scatter", height="600px"),
+                                plotOutput("yz_scatter", height="600px")),
+                       tabPanel("GAM",
+                                h4("Summary of GAM fit:"),
+                                verbatimTextOutput("gam_summary", placeholder=TRUE),
+                                h4("Performance of GAM fit:"),
+                                verbatimTextOutput("gam_performance", placeholder=TRUE),
+                                h4("Output from gam.check():"),
+                                verbatimTextOutput("gam_check", placeholder=TRUE)),
+                       tabPanel("Persp",
+                                plotOutput("gam_persp", height="600px"),
+                                wellPanel(h4("Perspective Settings"),
+                                          checkboxInput("PERSP.SE",
+                                                        "Plot Standard Error Surfaces",
+                                                        value=FALSE),
+                                          checkboxInput("PERSP.POINTS",
+                                                        "Plot Data Points",
+                                                        value=FALSE),
+                                          sliderInput("PERSP.THETA",
+                                                      "Horizontal Rotation",
+                                                      min=-360, max=0, value=0, step=30))
+                                ),
+                       tabPanel("Contours",
+                                plotOutput("gam_contours", height="800px"),
+                                wellPanel(h4("Contours Settings"),
+                                          checkboxInput("CONTOURS.POINTS",
+                                                        "Plot Data Points",
+                                                        value=TRUE),
+                                          sliderInput("CONTOURS.EXCLUSION",
+                                                      "Grid Exclusion Distance",
+                                                      min=0, max=0.5, value=0.1, step=0.01))
+                                ))
+    )
+  )
+)
+
+
+
