@@ -167,10 +167,16 @@ function(input, output, session) {
   output$gam_contours <- renderPlot({
     vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL), type="response",
             plot.type="contour", too.far=input$CONTOURS.EXCLUSION,
-            main=input$Z.COL, color="cm", labcex=1.5, method="edge")
+            main=input$Z.COL, color="cm", contour.col="black", labcex=1.5, method="edge")
     if (input$CONTOURS.POINTS){
+      
+      #Create a function to generate a continuous color palette
+      rbPal <- colorRampPalette(c("blue", "red"))
+      #This adds a column of color values based on the y values
+      point.colors <- rbPal(10)[as.numeric(cut(selectedData()[, input$Z.COL], breaks=10))]
+      
       points(selectedData()[, input$X.COL], selectedData()[, input$Y.COL],
-             pch=16, cex=0.5, col="gray18")
+             pch=16, cex=input$CONTOURS.POINTSIZE, col=point.colors)
     }
     
   })

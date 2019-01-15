@@ -20,7 +20,7 @@ fluidPage(
                      selectInput("SEX.GROUP", "Sex Group",
                                  "", selected="", multiple=TRUE),
                      sliderInput("AGE.RANGE", "Age Range",
-                                 min=0, max=100, value=c(0, 100), step=5)),
+                                 min=0, max=100, value=c(0, 100), step=1)),
            wellPanel(h4("GAM Settings"),
                      sliderInput("GAM.K", "Number of Knots (Flexibility)",
                                  min=3, max=8, value=5, step=1),
@@ -72,7 +72,10 @@ fluidPage(
                                                         value=TRUE),
                                           sliderInput("CONTOURS.EXCLUSION",
                                                       "Grid Exclusion Distance",
-                                                      min=0, max=0.5, value=0.1, step=0.01))
+                                                      min=0, max=0.5, value=0.1, step=0.01),
+                                          sliderInput("CONTOURS.POINTSIZE",
+                                                      "Point Size (if plotted)",
+                                                      min=0, max=2, value=0.6, step=0.1))
                                 ))
     )
   )
