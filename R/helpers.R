@@ -6,7 +6,11 @@ default.x.col <- "AGE"
 default.y.col <- "TOTALBRAIN_VOLUME"
 default.z.col <- "CS1"
 
+# DEFINE AVAILABLE BIOCOVARIATES
+biological.covariates <- c("AGE", "SEX", "DIAGNOSIS")
+
 # DEFINE DEFAULT FILTERS HERE
+default.studies <- c()
 default.diagnosis <- "CN"
 default.sex <- c("M", "F")
 
@@ -45,9 +49,9 @@ data <- data[, keep.columns]
 
 # DEFINE SELECTABLE VARIABLES
 selectable.variables <- colnames(data)
-biological.covariates <- c("AGE", "SEX", "DIAGNOSIS")
 
-# FIND DIAGNOSIS GROUPS
+# FIND GROUPS
+studies <- unique(data$STUDY)
 diagnosis.groups <- unique(data$DIAGNOSIS)
 sex.groups <- unique(data$SEX)
 

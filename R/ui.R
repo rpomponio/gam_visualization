@@ -15,6 +15,8 @@ fluidPage(
                      selectInput("Y.TRANSFORM", "Y-Variable Transformation", variable.transforms),
                      selectInput("Z.TRANSFORM", "Z-Variable Transformation", variable.transforms)),
            wellPanel(h4("Data Filters"),
+                     selectInput("STUDIES.SUBSET", "Selected Studies",
+                                 "", selected="", multiple=TRUE),
                      selectInput("DIAGNOSIS.GROUP", "Diagnosis Group",
                                  "", selected="", multiple=TRUE),
                      selectInput("SEX.GROUP", "Sex Group",
@@ -73,6 +75,9 @@ fluidPage(
                                           sliderInput("CONTOURS.EXCLUSION",
                                                       "Grid Exclusion Distance",
                                                       min=0, max=0.5, value=0.1, step=0.01),
+                                          sliderInput("CONTOURS.NLEVELS",
+                                                      "Number of Isocontours",
+                                                      min=1, max=30, value=10, step=1),
                                           sliderInput("CONTOURS.POINTSIZE",
                                                       "Point Size (if plotted)",
                                                       min=0, max=2, value=0.6, step=0.1))

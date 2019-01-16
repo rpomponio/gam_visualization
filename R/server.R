@@ -8,6 +8,7 @@ function(input, output, session) {
     updateSelectInput(session, "X.COL", choices=selectable.variables, selected=default.x.col)
     updateSelectInput(session, "Y.COL", choices=selectable.variables, selected=default.y.col)
     updateSelectInput(session, "Z.COL", choices=selectable.variables, selected=default.z.col)
+    updateSelectInput(session, "STUDIES.SUBSET", choices=studies, selected=default.studies)
     updateSelectInput(session, "DIAGNOSIS.GROUP", choices=diagnosis.groups, selected=default.diagnosis)
     updateSelectInput(session, "SEX.GROUP", choices=sex.groups, selected=default.sex)
     updateSelectInput(session, "GAM.COVARIATES", choices=biological.covariates)
@@ -19,6 +20,9 @@ function(input, output, session) {
     selected.data <- selected.data[!is.na(selected.data[, input$X.COL]), ]
     selected.data <- selected.data[!is.na(selected.data[, input$Y.COL]), ]
     selected.data <- selected.data[!is.na(selected.data[, input$Z.COL]), ]
+    if (length(input$STUDIES.SUBSET)>0){
+      selected.data <- subset(selected.data, STUDY%in%input$STUDIES.SUBSET)
+    }
     selected.data <- subset(selected.data, DIAGNOSIS%in%input$DIAGNOSIS.GROUP)
     selected.data <- subset(selected.data, SEX%in%input$SEX.GROUP)
     selected.data <- subset(selected.data,
@@ -167,7 +171,8 @@ function(input, output, session) {
   output$gam_contours <- renderPlot({
     vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL), type="response",
             plot.type="contour", too.far=input$CONTOURS.EXCLUSION,
-            main=input$Z.COL, color="cm", contour.col="black", labcex=1.5, method="edge")
+            main=input$Z.COL, color="cm", contour.col="black",
+            labcex=1.5, method="edge", nlevels=input$CONTOURS.NLEVELS)
     if (input$CONTOURS.POINTS){
       
       #Create a function to generate a continuous color palette
