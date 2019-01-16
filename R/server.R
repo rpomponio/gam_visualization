@@ -99,7 +99,7 @@ function(input, output, session) {
   # PLOT SCATTERPLOT OF Y-VARIABLE VS X-VARIABLE
   output$xy_scatter <- renderPlot({
     par(cex=1.5)
-    plt.title <- paste("Scatterplot of Selected Y-Variable vs. Selected X-Variable")
+    plt.title <- paste ("Scatterplot of Selected Y-Variable vs. Selected X-Variable")
     plot(selectedData()[, input$X.COL], selectedData()[, input$Y.COL],
          pch=16, col="gray18", cex=0.6,
          main=plt.title, xlab=input$X.COL, ylab=input$Y.COL)
@@ -152,6 +152,18 @@ function(input, output, session) {
     gam.check(gamFit())
   })
   
+  # FIT INDIVIDUAL GAMS FOR X, Y VARIABLES
+  RSqXY <- reactive({
+    x.formula <- as.formula(paste0(input$Z.COL, " ~ s(", input$X.COL,")"))
+    x.gam <- gam(x.formula, data=selectedData(), method="REML")
+    x.rsq <- round(as.numeric(summary(x.gam)["r.sq"]), 3)
+    y.formula <- as.formula(paste0(input$Z.COL, " ~ s(", input$Y.COL,")"))
+    y.gam <- gam(y.formula, data=selectedData(), method="REML")
+    y.rsq <- round(as.numeric(summary(y.gam)["r.sq"]), 3)
+    
+    list(x.rsq, y.rsq)
+  })
+  
   # VISUALIZE GAM PERSPECTIVE
   output$gam_persp <- renderPlot({
     persp.se <- ifelse(input$PERSP.SE, 2, 0)
@@ -169,17 +181,32 @@ function(input, output, session) {
   
   # VISUALIZE GAM CONTOURS
   output$gam_contours <- renderPlot({
+    plt.title <- paste0(input$Z.COL, " (N=", nrow(selectedData()),")")
+
+    if (input$CONTOURS.RSQ){
+      x.lab <- paste0(input$X.COL, " (R-Sq: ", RSqXY()[1], ")")
+      y.lab <- paste0(input$Y.COL, " (R-Sq: ", RSqXY()[2], ")")
+    } else {
+      x.lab <- input$X.COL
+      y.lab <- input$Y.COL
+    }
+    
     vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL), type="response",
             plot.type="contour", too.far=input$CONTOURS.EXCLUSION,
-            main=input$Z.COL, color="cm", contour.col="black",
+            main=plt.title, color="cm", contour.col="black", xlab=x.lab, ylab=y.lab,
             labcex=1.5, method="edge", nlevels=input$CONTOURS.NLEVELS)
+    
     if (input$CONTOURS.POINTS){
       
-      #Create a function to generate a continuous color palette
-      rbPal <- colorRampPalette(c("blue", "red"))
-      #This adds a column of color values based on the y values
-      point.colors <- rbPal(10)[as.numeric(cut(selectedData()[, input$Z.COL], breaks=10))]
-      
+      if (input$CONTOURS.POINTCOLORS){
+        # Create a function to generate a continuous color palette
+        rbPal <- colorRampPalette(c("blue", "red"))
+        # This vector of color values based on the continuous variable
+        point.colors <- rbPal(10)[as.numeric(cut(selectedData()[, input$Z.COL], breaks=10))]
+      } else {
+        point.colors <- "gray18"
+      }
+
       points(selectedData()[, input$X.COL], selectedData()[, input$Y.COL],
              pch=16, cex=input$CONTOURS.POINTSIZE, col=point.colors)
     }
