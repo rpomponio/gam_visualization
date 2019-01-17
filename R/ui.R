@@ -87,8 +87,12 @@ fluidPage(
                                           sliderInput("CONTOURS.POINTSIZE",
                                                       "Point Size (if plotted)",
                                                       min=0, max=2, value=0.6, step=0.1))),
-                       tabPanel("Categ",
-                                plotOutput("gam_categorical", height="600px")
+                       tabPanel("Partial",
+                                plotOutput("gam_partial", height="600px"),
+                                wellPanel(h4("Partial Dependency Settings"),
+                                  sliderInput("PARTIAL.ALPHA",
+                                              "CI Alpha (95% CI: alpha=0.05)",
+                                              min=0, max=1, value=0.05, step=0.05))
                                 ))
     )
   )

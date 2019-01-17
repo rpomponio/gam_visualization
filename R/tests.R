@@ -15,8 +15,6 @@ input$GAM.GAMMA <- 1
 input$GAM.COVARIATES <- biological.covariates
 input$GAM.STUDY <- FALSE
 
-data[data$DIAGNOSIS=="CN", "TOTALBRAIN_VOLUME"] <- data[data$DIAGNOSIS=="CN", "TOTALBRAIN_VOLUME"] + 250000
-
 
 ################
 
@@ -73,33 +71,33 @@ par(cex=1.5)
 plt.title <- paste("Histogram of Selected Y-Variable")
 barplot(table(selectedData()[, input$Y.COL]), main=plt.title, xlab=input$Y.COL)
 
-################################################################################
-# FIT GAM MODEL AND PRODUCE SUMMARY
-gam.fit <- gam(TOTALBRAIN_VOLUME ~ s(AGE, k=5) + DIAGNOSIS, data=selectedData(), method="REML")
-summary(gam.fit)
-
-gam.persp <- vis.gam(gam.fit,
-                     type="response", color="cm", se=0)
-
-# TRY ANOTHER KIND OF PLOT
-par(cex=1.5)
-plt.title <- paste("Scatterplot of Selected Z-Variable vs. Selected X-Variable")
-point.colors <- rainbow(2)[as.numeric(selectedData()[, input$Y.COL])]
-plot(selectedData()[, input$X.COL], selectedData()[, input$Z.COL],
-     pch=16, col=point.colors, cex=0.6,
-     main=plt.title, xlab=input$X.COL, ylab=input$Z.COL)
-
-x.seq <- seq(min(selectedData()[, input$X.COL]), max(selectedData()[, input$X.COL]), length.out=250)
-y.seq <- unique(selectedData()[, input$Y.COL])
-plot.data <- expand.grid(x.seq, y.seq)
-names(plot.data) <- c(input$X.COL, input$Y.COL)
-plot.data[, input$Z.COL] <- predict(gam.fit, newdata=plot.data)
-lines(plot.data[1:250, input$X.COL], plot.data[1:250, input$Z.COL])
-lines(plot.data[251:500, input$X.COL], plot.data[251:500, input$Z.COL])
-
-
-
-visreg(gam.fit, xvar=input$X.COL, by=input$Y.COL, overlay=TRUE, ylab=input$Z.COL)
+# ################################################################################
+# # FIT GAM MODEL AND PRODUCE SUMMARY
+# gam.fit <- gam(TOTALBRAIN_VOLUME ~ s(AGE, k=5) + DIAGNOSIS, data=selectedData(), method="REML")
+# summary(gam.fit)
+# 
+# gam.persp <- vis.gam(gam.fit,
+#                      type="response", color="cm", se=0)
+# 
+# # TRY ANOTHER KIND OF PLOT
+# par(cex=1.5)
+# plt.title <- paste("Scatterplot of Selected Z-Variable vs. Selected X-Variable")
+# point.colors <- rainbow(2)[as.numeric(selectedData()[, input$Y.COL])]
+# plot(selectedData()[, input$X.COL], selectedData()[, input$Z.COL],
+#      pch=16, col=point.colors, cex=0.6,
+#      main=plt.title, xlab=input$X.COL, ylab=input$Z.COL)
+# 
+# x.seq <- seq(min(selectedData()[, input$X.COL]), max(selectedData()[, input$X.COL]), length.out=250)
+# y.seq <- unique(selectedData()[, input$Y.COL])
+# plot.data <- expand.grid(x.seq, y.seq)
+# names(plot.data) <- c(input$X.COL, input$Y.COL)
+# plot.data[, input$Z.COL] <- predict(gam.fit, newdata=plot.data)
+# lines(plot.data[1:250, input$X.COL], plot.data[1:250, input$Z.COL])
+# lines(plot.data[251:500, input$X.COL], plot.data[251:500, input$Z.COL])
+# 
+# 
+# 
+# visreg(gam.fit, xvar=input$X.COL, by=input$Y.COL, overlay=TRUE, ylab=input$Z.COL)
 
 
 
