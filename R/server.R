@@ -38,7 +38,7 @@ function(input, output, session) {
       } else if (transform=="Cubic Root"){
         selected.data[, input[[col]]] <- (original.values) ^ (1/3)
       } else if (transform=="Categorical"){
-        
+        selected.data[, input[[col]]] <- as.factor(original.values)
       }
     }
     
@@ -83,9 +83,15 @@ function(input, output, session) {
   # PLOT HISTOGRAM OF Y-VARIABLE
   output$y_histogram <- renderPlot({
     par(cex=1.5)
-    plt.title <- paste("Histogram of Selected Y-Variable")
-    hist(selectedData()[, input$Y.COL], col="gray", breaks=50,
-         main=plt.title, xlab=input$Y.COL)
+    if (input$Y.TRANSFORM=="Categorical"){
+      plt.title <- paste("Barplot of Selected Y-Variable")
+      barplot(table(selectedData()[, input$Y.COL]),
+           main=plt.title, xlab=input$Y.COL)
+    } else {
+      plt.title <- paste("Histogram of Selected Y-Variable")
+      hist(selectedData()[, input$Y.COL], col="gray", breaks=50,
+           main=plt.title, xlab=input$Y.COL)
+    }
   })
 
   # PLOT HISTOGRAM OF Y-VARIABLE
@@ -125,13 +131,15 @@ function(input, output, session) {
   
   # FIT GAM MODEL AND PRODUCE SUMMARY
   gamFit <- reactive({
+    y.categorical <- input$Y.TRANSFORM=="Categorical"
     covars <- input$GAM.COVARIATES
     if (input$GAM.STUDY){ covars <- c(covars, "STUDY") }
     gam.formula.string <- construct_gam_formula_string(input$X.COL,
                                                        input$Y.COL,
                                                        input$Z.COL,
                                                        COVARIATES=covars,
-                                                       GAM.K=input$GAM.K)
+                                                       GAM.K=input$GAM.K,
+                                                       Y.CATEGORICAL=y.categorical)
     gam.formula <- as.formula(gam.formula.string)
     gam.fit <- gam(gam.formula, data=selectedData(), method="REML",
                    gamma=input$GAM.GAMMA)
@@ -215,7 +223,10 @@ function(input, output, session) {
   
   
   
-  
+  # TEST
+  output$gam_categorical <- renderPlot({
+    visreg(gamFit(), xvar=input$X.COL, by=input$Y.COL, overlay=TRUE, ylab=input$Z.COL)
+  })
   
   
   

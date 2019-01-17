@@ -22,6 +22,7 @@ PATH.DATA <- "data/DUMMY_DATASET.csv"
 
 library(mgcv)
 library(ggplot2)
+library(visreg)
 
 theme_set(theme_classic(base_size=18))
 
@@ -60,14 +61,23 @@ sex.groups <- unique(data$SEX)
 # HELPER FUNCTION FOR CONSTRUCTING GAM FORMULA STRINGS
 construct_gam_formula_string <- function(X.COL, Y.COL, Z.COL,
                                          COVARIATES=c(),
-                                         GAM.K=5){
+                                         GAM.K=5,
+                                         Y.CATEGORICAL=FALSE){
   gam.formula.string <- paste0(Z.COL)
-  gam.formula.string <- paste0(gam.formula.string, " ~ te(")
-  gam.formula.string <- paste0(gam.formula.string, X.COL)
-  gam.formula.string <- paste0(gam.formula.string, ", ")
-  gam.formula.string <- paste0(gam.formula.string, Y.COL)
-  gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
-  gam.formula.string <- paste0(gam.formula.string, ")")
+  if (Y.CATEGORICAL){
+    gam.formula.string <- paste0(gam.formula.string, " ~ s(")
+    gam.formula.string <- paste0(gam.formula.string, X.COL)
+    gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
+    gam.formula.string <- paste0(gam.formula.string, ")")
+    gam.formula.string <- paste0(gam.formula.string, " + ", Y.COL)
+  } else {
+    gam.formula.string <- paste0(gam.formula.string, " ~ te(")
+    gam.formula.string <- paste0(gam.formula.string, X.COL)
+    gam.formula.string <- paste0(gam.formula.string, ", ")
+    gam.formula.string <- paste0(gam.formula.string, Y.COL)
+    gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
+    gam.formula.string <- paste0(gam.formula.string, ")")
+  }
   for (covar in COVARIATES){
     gam.formula.string <- paste0(gam.formula.string, " + ", covar)
   }

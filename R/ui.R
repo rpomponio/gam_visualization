@@ -1,6 +1,6 @@
 
 # HARDCODED PARAMETERS
-variable.transforms <- c("None", "Natural Log", "Cubic Root")
+variable.transforms <- c("None", "Natural Log", "Cubic Root", "Categorical")
 
 fluidPage(
   headerPanel("Interactive Visualization"),
@@ -8,7 +8,7 @@ fluidPage(
     column(4,
            wellPanel(h4("Main"),
                      selectInput("X.COL", "X-Variable", ""),
-                     selectInput("Y.COL", "Y-Variable", ""),
+                     selectInput("Y.COL", "Y-Variable / Categorical Variable", ""),
                      selectInput("Z.COL", "Z-Variable", "")),
            wellPanel(h4("Variable Transformations"),
                      selectInput("X.TRANSFORM", "X-Variable Transformation", variable.transforms),
@@ -86,7 +86,9 @@ fluidPage(
                                                       min=1, max=30, value=10, step=1),
                                           sliderInput("CONTOURS.POINTSIZE",
                                                       "Point Size (if plotted)",
-                                                      min=0, max=2, value=0.6, step=0.1))
+                                                      min=0, max=2, value=0.6, step=0.1))),
+                       tabPanel("Categ",
+                                plotOutput("gam_categorical", height="600px")
                                 ))
     )
   )
