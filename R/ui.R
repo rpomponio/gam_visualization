@@ -64,7 +64,10 @@ fluidPage(
                                                         value=FALSE),
                                           sliderInput("PERSP.THETA",
                                                       "Horizontal Rotation",
-                                                      min=-360, max=0, value=0, step=30))
+                                                      min=-360, max=0, value=-30, step=15),
+                                          sliderInput("PERSP.PHI",
+                                                      "Vertical Rotation",
+                                                      min=0, max=360, value=15, step=15))
                                 ),
                        tabPanel("Contours",
                                 plotOutput("gam_contours", height="800px"),

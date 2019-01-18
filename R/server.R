@@ -177,11 +177,11 @@ function(input, output, session) {
     persp.se <- ifelse(input$PERSP.SE, 2, 0)
     if (input$Y.TRANSFORM=="Categorical"){
       gam.persp <- vis.gam(gamFit(), type="response", color="cm", se=persp.se,
-                           zlab=input$Z.COL, theta=input$PERSP.THETA)
+                           zlab=input$Z.COL, theta=input$PERSP.THETA, phi=input$PERSP.PHI)
     } else {
       gam.persp <- vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL),
                            type="response", color="cm", se=persp.se,
-                           zlab=input$Z.COL, theta=input$PERSP.THETA)
+                           zlab=input$Z.COL, theta=input$PERSP.THETA, phi=input$PERSP.PHI)
       if (input$PERSP.POINTS){
         points.3d <- trans3d(selectedData()[, input$X.COL],
                              selectedData()[, input$Y.COL],
