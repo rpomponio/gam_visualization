@@ -39,6 +39,11 @@ function(input, output, session) {
         selected.data[, input[[col]]] <- (original.values) ^ (1/3)
       } else if (transform=="Categorical"){
         selected.data[, input[[col]]] <- as.factor(original.values)
+      } else if (transform=="Binary"){
+        cases.all <- unique(original.values)
+        cases.sorted <- cases.all[order(cases.all)]
+        case.positive <- cases.sorted[length(cases.sorted)]
+        selected.data[, input[[col]]] <- as.numeric(original.values==case.positive)
       }
     }
     
@@ -97,9 +102,9 @@ function(input, output, session) {
   # PLOT HISTOGRAM OF Y-VARIABLE
   output$z_histogram <- renderPlot({
     par(cex=1.5)
-    plt.title <- paste("Histogram of Selected Z-Variable")
-    hist(selectedData()[, input$Z.COL], col="gray", breaks=50,
-         main=plt.title, xlab=input$Z.COL)
+    plt.title <- paste("Barplot of Selected Z-Variable")
+    barplot(table(selectedData()[, input$Z.COL]),
+            main=plt.title, xlab=input$Z.COL)
   })
   
   # PLOT SCATTERPLOT OF Y-VARIABLE VS X-VARIABLE
@@ -141,8 +146,13 @@ function(input, output, session) {
                                                        GAM.K=input$GAM.K,
                                                        Y.CATEGORICAL=y.categorical)
     gam.formula <- as.formula(gam.formula.string)
-    gam.fit <- gam(gam.formula, data=selectedData(), method="REML",
-                   gamma=input$GAM.GAMMA)
+    if (input$Z.TRANSFORM=="Binary"){
+      gam.fit <- gam(gam.formula, data=selectedData(), method="REML",
+                     gamma=input$GAM.GAMMA, family=binomial)
+    } else {
+      gam.fit <- gam(gam.formula, data=selectedData(), method="REML",
+                     gamma=input$GAM.GAMMA)
+    }
     
     gam.fit
   })

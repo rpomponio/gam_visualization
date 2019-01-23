@@ -1,6 +1,6 @@
 
 # HARDCODED PARAMETERS
-variable.transforms <- c("None", "Natural Log", "Cubic Root", "Categorical")
+variable.transforms <- c("None", "Natural Log", "Cubic Root", "Categorical", "Binary")
 
 fluidPage(
   headerPanel("Interactive Visualization"),
