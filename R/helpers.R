@@ -62,7 +62,8 @@ sex.groups <- unique(data$SEX)
 construct_gam_formula_string <- function(X.COL, Y.COL, Z.COL,
                                          COVARIATES=c(),
                                          GAM.K=5,
-                                         Y.CATEGORICAL=FALSE){
+                                         Y.CATEGORICAL=FALSE,
+                                         ADDITIVE.SMOOTHS=FALSE){
   gam.formula.string <- paste0(Z.COL)
   if (Y.CATEGORICAL){
     gam.formula.string <- paste0(gam.formula.string, " ~ s(")
@@ -70,6 +71,15 @@ construct_gam_formula_string <- function(X.COL, Y.COL, Z.COL,
     gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
     gam.formula.string <- paste0(gam.formula.string, ")")
     gam.formula.string <- paste0(gam.formula.string, " + ", Y.COL)
+  } else if (ADDITIVE.SMOOTHS){
+    gam.formula.string <- paste0(gam.formula.string, " ~ s(")
+    gam.formula.string <- paste0(gam.formula.string, X.COL)
+    gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
+    gam.formula.string <- paste0(gam.formula.string, ")")
+    gam.formula.string <- paste0(gam.formula.string, " + s(")
+    gam.formula.string <- paste0(gam.formula.string, Y.COL)
+    gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
+    gam.formula.string <- paste0(gam.formula.string, ")")
   } else {
     gam.formula.string <- paste0(gam.formula.string, " ~ te(")
     gam.formula.string <- paste0(gam.formula.string, X.COL)
