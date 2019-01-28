@@ -99,12 +99,18 @@ function(input, output, session) {
     }
   })
 
-  # PLOT HISTOGRAM OF Y-VARIABLE
+  # PLOT HISTOGRAM OF Z-VARIABLE
   output$z_histogram <- renderPlot({
     par(cex=1.5)
-    plt.title <- paste("Barplot of Selected Z-Variable")
-    barplot(table(selectedData()[, input$Z.COL]),
-            main=plt.title, xlab=input$Z.COL)
+    if (input$Z.TRANSFORM=="Binary"){
+      plt.title <- paste("Barplot of Selected Z-Variable")
+      barplot(table(selectedData()[, input$Z.COL]),
+              main=plt.title, xlab=input$Z.COL)
+    } else {
+      plt.title <- paste("Histogram of Selected Z-Variable")
+      hist(selectedData()[, input$Z.COL], col="gray", breaks=50,
+           main=plt.title, xlab=input$Z.COL)
+    }
   })
   
   # PLOT SCATTERPLOT OF Y-VARIABLE VS X-VARIABLE
