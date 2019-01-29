@@ -1,6 +1,7 @@
 
 # HARDCODED PARAMETERS
 variable.transforms <- c("None", "Natural Log", "Cubic Root", "Categorical", "Binary")
+smoothing.constructions <- c("te(x, y)", "s(x, y)", "s(x) + s(y)")
 
 fluidPage(
   headerPanel("Interactive Visualization"),
@@ -28,9 +29,9 @@ fluidPage(
                                  min=3, max=8, value=5, step=1),
                      sliderInput("GAM.GAMMA", "Gamma (Smoothness)",
                                  min=1, max=10, value=1, step=0.25),
-                     checkboxInput("GAM.ADDITIVESMOOTHS",
-                                   "Use Additive Smooths Rather than Tensor Product",
-                                   FALSE),
+                     selectInput("GAM.SMOOTHCONSTRUCTION",
+                                 "Construction of Smoothing Term(s)",
+                                 smoothing.constructions),
                      selectInput("GAM.COVARIATES", "Control for Biocovariates:",
                                  "", multiple=TRUE),
                      checkboxInput("GAM.STUDY", "Control for Study", FALSE))

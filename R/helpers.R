@@ -63,7 +63,7 @@ construct_gam_formula_string <- function(X.COL, Y.COL, Z.COL,
                                          COVARIATES=c(),
                                          GAM.K=5,
                                          Y.CATEGORICAL=FALSE,
-                                         ADDITIVE.SMOOTHS=FALSE){
+                                         SMOOTH.CONSTRUCTION="te(x, y)"){
   gam.formula.string <- paste0(Z.COL)
   if (Y.CATEGORICAL){
     gam.formula.string <- paste0(gam.formula.string, " ~ s(")
@@ -71,12 +71,19 @@ construct_gam_formula_string <- function(X.COL, Y.COL, Z.COL,
     gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
     gam.formula.string <- paste0(gam.formula.string, ")")
     gam.formula.string <- paste0(gam.formula.string, " + ", Y.COL)
-  } else if (ADDITIVE.SMOOTHS){
+  } else if (SMOOTH.CONSTRUCTION=="s(x) + s(y)"){
     gam.formula.string <- paste0(gam.formula.string, " ~ s(")
     gam.formula.string <- paste0(gam.formula.string, X.COL)
     gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
     gam.formula.string <- paste0(gam.formula.string, ")")
     gam.formula.string <- paste0(gam.formula.string, " + s(")
+    gam.formula.string <- paste0(gam.formula.string, Y.COL)
+    gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
+    gam.formula.string <- paste0(gam.formula.string, ")")
+  } else if (SMOOTH.CONSTRUCTION=="s(x, y)"){
+    gam.formula.string <- paste0(gam.formula.string, " ~ s(")
+    gam.formula.string <- paste0(gam.formula.string, X.COL)
+    gam.formula.string <- paste0(gam.formula.string, ", ")
     gam.formula.string <- paste0(gam.formula.string, Y.COL)
     gam.formula.string <- paste0(gam.formula.string, ", k=", GAM.K)
     gam.formula.string <- paste0(gam.formula.string, ")")

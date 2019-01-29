@@ -151,7 +151,7 @@ function(input, output, session) {
                                                        COVARIATES=covars,
                                                        GAM.K=input$GAM.K,
                                                        Y.CATEGORICAL=y.categorical,
-                                                       ADDITIVE.SMOOTHS=input$GAM.ADDITIVESMOOTHS)
+                                                       SMOOTH.CONSTRUCTION=input$GAM.SMOOTHCONSTRUCTION)
     gam.formula <- as.formula(gam.formula.string)
     if (input$Z.TRANSFORM=="Binary"){
       gam.fit <- gam(gam.formula, data=selectedData(), method="REML",
