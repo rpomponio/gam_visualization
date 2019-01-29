@@ -249,7 +249,11 @@ function(input, output, session) {
            overlay=TRUE, ylab=input$Z.COL, alpha=input$PARTIAL.ALPHA)
   })
   
-  
+  # PLOT CONTOURS WITH STANDARD ERRORS
+  output$gam_secontours <- renderPlot({
+    plot(gamFit(), select=1, rug=FALSE, too.far=input$SECONTOURS.EXCLUSION,
+         se=input$SECONTOURS.SE, cex.lab=2)
+  })
   
   
   

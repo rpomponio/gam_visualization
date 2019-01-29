@@ -99,7 +99,17 @@ fluidPage(
                                   sliderInput("PARTIAL.ALPHA",
                                               "CI Alpha (95% CI: alpha=0.05)",
                                               min=0, max=1, value=0.05, step=0.05))
-                                ))
+                                ),
+                       tabPanel("SE Contours",
+                                plotOutput("gam_secontours", height="600px"),
+                                wellPanel(h4("SE Contours Settings"),
+                                          sliderInput("SECONTOURS.EXCLUSION",
+                                                      "Grid Exclusion Distance",
+                                                      min=0, max=0.5, value=0.1, step=0.01),
+                                          sliderInput("SECONTOURS.SE",
+                                                      "Number of Standard Errors from Isocontour",
+                                                      min=0, max=3, value=1, step=0.05))
+                       ))
     )
   )
 )
