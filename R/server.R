@@ -226,6 +226,37 @@ function(input, output, session) {
             main=plt.title, color="cm", contour.col="black", xlab=x.lab, ylab=y.lab,
             labcex=1.5, method="edge", nlevels=input$CONTOURS.NLEVELS)
     
+    if (input$CONTOURS.SE > 0){
+      # number of grid nodes in one dimension (same as vis.gam default)
+      n.grid <- 30
+      # create dataframe of grid nodes
+      x.seq <- seq(min(selectedData()[, input$X.COL]), max(selectedData()[, input$X.COL]), length.out=n.grid)
+      y.seq <- seq(min(selectedData()[, input$Y.COL]), max(selectedData()[, input$Y.COL]), length.out=n.grid)
+      df.seq <- data.frame(x.seq, y.seq)
+      xy.grid <- expand.grid(df.seq)
+      names(xy.grid) <- c(input$X.COL, input$Y.COL)
+      # predict value of model at each node with SE
+      pred <- predict(gamFit(), newdata=xy.grid, type="response", se=TRUE)
+      z.pred <- pred$fit
+      z.se <- pred$se.fit
+      # exlude points that are too far from data
+      exclude.points <- exclude.too.far(xy.grid[, 1], xy.grid[, 2],
+                                        selectedData()[, input$X.COL],
+                                        selectedData()[, input$Y.COL],
+                                        dist=input$CONTOURS.EXCLUSION)
+      z.pred[exclude.points] <- NA
+      # create matrices for upper and lower surfaces
+      z.grid.lwr <- matrix(z.pred - (input$CONTOURS.SE * z.se), nrow=n.grid, byrow=FALSE)
+      z.grid.upr <- matrix(z.pred + (input$CONTOURS.SE * z.se), nrow=n.grid, byrow=FALSE)
+      # add contours to figure
+      contour(x=x.seq, y=y.seq, z=z.grid.lwr,
+              labcex=1.0, method="edge", nlevels=input$CONTOURS.NLEVELS,
+              lty=2, lwd=0.5, col="darkgreen", add=TRUE)
+      contour(x=x.seq, y=y.seq, z=z.grid.upr,
+              labcex=1.0, method="edge", nlevels=input$CONTOURS.NLEVELS,
+              lty=2, lwd=0.5, col="red", add=TRUE)
+    }
+    
     if (input$CONTOURS.POINTS){
       
       if (input$CONTOURS.POINTCOLORS){
@@ -249,15 +280,5 @@ function(input, output, session) {
            overlay=TRUE, ylab=input$Z.COL, alpha=input$PARTIAL.ALPHA)
   })
   
-  # PLOT CONTOURS WITH STANDARD ERRORS
-  output$gam_secontours <- renderPlot({
-    plot(gamFit(), select=1, rug=FALSE, too.far=input$SECONTOURS.EXCLUSION,
-         se=input$SECONTOURS.SE, cex.lab=2)
-  })
-  
-  
-  
-  
-  
-  
+
 }

@@ -75,6 +75,9 @@ fluidPage(
                        tabPanel("Contours",
                                 plotOutput("gam_contours", height="800px"),
                                 wellPanel(h4("Contours Settings"),
+                                          sliderInput("CONTOURS.SE",
+                                                      "Show Confidence Bands: Number of SEs [Still Testing]",
+                                                      min=0, max=5, value=0, step=0.05),
                                           checkboxInput("CONTOURS.POINTS",
                                                         "Plot Data Points",
                                                         value=TRUE),
@@ -99,17 +102,7 @@ fluidPage(
                                   sliderInput("PARTIAL.ALPHA",
                                               "CI Alpha (95% CI: alpha=0.05)",
                                               min=0, max=1, value=0.05, step=0.05))
-                                ),
-                       tabPanel("SE Contours",
-                                plotOutput("gam_secontours", height="600px"),
-                                wellPanel(h4("SE Contours Settings"),
-                                          sliderInput("SECONTOURS.EXCLUSION",
-                                                      "Grid Exclusion Distance",
-                                                      min=0, max=0.5, value=0.1, step=0.01),
-                                          sliderInput("SECONTOURS.SE",
-                                                      "Number of Standard Errors from Isocontour",
-                                                      min=0, max=3, value=1, step=0.05))
-                       ))
+                                ))
     )
   )
 )
