@@ -255,6 +255,10 @@ function(input, output, session) {
       contour(x=x.seq, y=y.seq, z=z.grid.upr,
               labcex=1.0, method="edge", nlevels=input$CONTOURS.NLEVELS,
               lty=2, lwd=0.5, col="red", add=TRUE)
+      # add legend
+      legend("topleft", legend = c(paste0("+", input$CONTOURS.SE, " SEs"),
+                                   paste0("-", input$CONTOURS.SE, " SEs")), bty = "n",
+             cex = 1.0, col=c("darkgreen", "red"), lty=c(2, 2), lwd=c(0.5, 0.5))
     }
     
     if (input$CONTOURS.POINTS){
@@ -270,6 +274,16 @@ function(input, output, session) {
 
       points(selectedData()[, input$X.COL], selectedData()[, input$Y.COL],
              pch=16, cex=input$CONTOURS.POINTSIZE, col=point.colors)
+    }
+    
+    if (!is.na(input$CONTOURS.XVAL)&!is.na(input$CONTOURS.YVAL)){
+      points(input$CONTOURS.XVAL, input$CONTOURS.YVAL,
+             pch=4, cex=4.0, col="darkred")
+      df.point <- data.frame(x=input$CONTOURS.XVAL, y=input$CONTOURS.YVAL)
+      names(df.point) <- c(input$X.COL, input$Y.COL)
+      point.pred <- predict(gamFit(), newdata=df.point, type="response")
+      point.text <- paste0("PREDICTED VALUE: ", round(point.pred, 3))
+      text(input$CONTOURS.XVAL, input$CONTOURS.YVAL, point.text, pos=4, offset=0.75, col="darkred")
     }
     
   })
