@@ -222,13 +222,13 @@ function(input, output, session) {
     }
     
     vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL), type="response",
-            plot.type="contour", too.far=input$CONTOURS.EXCLUSION,
+            plot.type="contour", too.far=input$CONTOURS.EXCLUSION, n.grid=100,
             main=plt.title, color="cm", contour.col="black", xlab=x.lab, ylab=y.lab,
             labcex=1.5, method="edge", nlevels=input$CONTOURS.NLEVELS)
     
     if (input$CONTOURS.SE > 0){
-      # number of grid nodes in one dimension (same as vis.gam default)
-      n.grid <- 30
+      # number of grid nodes in one dimension (same as vis.gam)
+      n.grid <- 100
       # create dataframe of grid nodes
       x.seq <- seq(min(selectedData()[, input$X.COL]), max(selectedData()[, input$X.COL]), length.out=n.grid)
       y.seq <- seq(min(selectedData()[, input$Y.COL]), max(selectedData()[, input$Y.COL]), length.out=n.grid)
