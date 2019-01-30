@@ -228,11 +228,11 @@ function(input, output, session) {
   output$gam_persp <- renderPlot({
     persp.se <- ifelse(input$PERSP.SE, 2, 0)
     if (input$Y.TRANSFORM=="Categorical"){
-      gam.persp <- vis.gam(gamFit(), type="response", color="cm", se=persp.se,
+      gam.persp <- vis.gam(gamFit(), type="response", color="cm", se=persp.se, too.far=input$PERSP.EXCLUSION,
                            zlab=input$Z.COL, theta=input$PERSP.THETA, phi=input$PERSP.PHI)
     } else {
       gam.persp <- vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL),
-                           type="response", color="cm", se=persp.se,
+                           type="response", color="cm", se=persp.se, too.far=input$PERSP.EXCLUSION,
                            zlab=input$Z.COL, theta=input$PERSP.THETA, phi=input$PERSP.PHI)
       if (input$PERSP.POINTS){
         points.3d <- trans3d(selectedData()[, input$X.COL],
