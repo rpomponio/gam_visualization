@@ -140,6 +140,41 @@ function(input, output, session) {
          main=plt.title, xlab=input$Y.COL, ylab=input$Z.COL)
   })
   
+  # PLOT HEATMAP OF DATA USING KNN
+  output$knn_heatmap <- renderPlot({
+    # function for rescaling vectors
+    range01 <- function(x){(x-min(x))/(max(x)-min(x))}
+    x.rescaled <- range01(selectedData()[, input$X.COL])
+    y.rescaled <- range01(selectedData()[, input$Y.COL])
+    df.train <- data.frame(x=x.rescaled, y=y.rescaled)
+    # new data frame for creating an image
+    n.grid <- 100
+    x.seq <- seq(0, 1, length.out=n.grid)
+    y.seq <- seq(0, 1, length.out=n.grid)
+    df.seq <- data.frame(x=x.seq, y=y.seq)
+    xy.grid <- expand.grid(df.seq)
+    # predict with knn
+    knn <- knn.reg(df.train, y=selectedData()[, input$Z.COL],
+                   k=input$HEATMAP.NEIGHBORS, test=xy.grid)
+    z.pred <- knn$pred
+    # exlude points that are too far from data
+    exclude.points <- exclude.too.far(xy.grid[, 1], xy.grid[, 2],
+                                      x.rescaled,
+                                      y.rescaled,
+                                      dist=input$HEATMAP.EXCLUSION)
+    z.pred[exclude.points] <- NA
+    # convert to matrix and plot image
+    z.grid <- matrix(z.pred, nrow=n.grid, byrow=FALSE)
+    image(x=x.seq, y=y.seq, z=z.grid, col=cm.colors(n.grid),
+          xlab=input$X.COL, ylab=input$Y.COL, xaxt="n", yaxt="n",
+          main=input$Z.COL)
+    if (input$HEATMAP.POINTS){
+      points(x.rescaled, y.rescaled,
+             pch=16, cex=1, col="gray18")
+    }
+  })
+  
+  
   # FIT GAM MODEL AND PRODUCE SUMMARY
   gamFit <- reactive({
     y.categorical <- input$Y.TRANSFORM=="Categorical"
@@ -258,7 +293,7 @@ function(input, output, session) {
       # add legend
       legend("topleft", legend = c(paste0("+", input$CONTOURS.SE, " SEs"),
                                    paste0("-", input$CONTOURS.SE, " SEs")), bty = "n",
-             cex = 1.0, col=c("darkgreen", "red"), lty=c(2, 2), lwd=c(0.5, 0.5))
+             cex = 1.0, col=c("red", "darkgreen"), lty=c(2, 2), lwd=c(1, 1))
     }
     
     if (input$CONTOURS.POINTS){
@@ -276,14 +311,24 @@ function(input, output, session) {
              pch=16, cex=input$CONTOURS.POINTSIZE, col=point.colors)
     }
     
-    if (!is.na(input$CONTOURS.XVAL)&!is.na(input$CONTOURS.YVAL)){
-      points(input$CONTOURS.XVAL, input$CONTOURS.YVAL,
+    # Plot predicted values
+    if (!is.na(input$CONTOURS.XVAL1)&!is.na(input$CONTOURS.YVAL1)){
+      points(input$CONTOURS.XVAL1, input$CONTOURS.YVAL1,
              pch=4, cex=4.0, col="darkred")
-      df.point <- data.frame(x=input$CONTOURS.XVAL, y=input$CONTOURS.YVAL)
+      df.point <- data.frame(x=input$CONTOURS.XVAL1, y=input$CONTOURS.YVAL1)
       names(df.point) <- c(input$X.COL, input$Y.COL)
       point.pred <- predict(gamFit(), newdata=df.point, type="response")
       point.text <- paste0("PREDICTED VALUE: ", round(point.pred, 3))
-      text(input$CONTOURS.XVAL, input$CONTOURS.YVAL, point.text, pos=4, offset=0.75, col="darkred")
+      text(input$CONTOURS.XVAL1, input$CONTOURS.YVAL1, point.text, pos=4, offset=0.75, col="darkred")
+    }
+    if (!is.na(input$CONTOURS.XVAL2)&!is.na(input$CONTOURS.YVAL2)){
+      points(input$CONTOURS.XVAL2, input$CONTOURS.YVAL2,
+             pch=4, cex=4.0, col="darkblue")
+      df.point <- data.frame(x=input$CONTOURS.XVAL2, y=input$CONTOURS.YVAL2)
+      names(df.point) <- c(input$X.COL, input$Y.COL)
+      point.pred <- predict(gamFit(), newdata=df.point, type="response")
+      point.text <- paste0("PREDICTED VALUE: ", round(point.pred, 3))
+      text(input$CONTOURS.XVAL2, input$CONTOURS.YVAL2, point.text, pos=4, offset=0.75, col="darkblue")
     }
     
   })

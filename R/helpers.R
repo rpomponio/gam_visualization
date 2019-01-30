@@ -23,6 +23,7 @@ PATH.DATA <- "data/DUMMY_DATASET.csv"
 library(mgcv)
 library(ggplot2)
 library(visreg)
+library(FNN)
 
 theme_set(theme_classic(base_size=18))
 
