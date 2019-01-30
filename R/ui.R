@@ -1,6 +1,7 @@
 
 # HARDCODED PARAMETERS
 variable.transforms <- c("None", "Natural Log", "Cubic Root", "Categorical", "Binary")
+smoothing.methods <- c("REML", "ML", "GCV.Cp")
 smoothing.constructions <- c("te(x, y)", "s(x, y)", "s(x) + s(y)")
 
 fluidPage(
@@ -29,8 +30,11 @@ fluidPage(
                                  min=3, max=8, value=5, step=1),
                      sliderInput("GAM.GAMMA", "Gamma (Smoothness)",
                                  min=1, max=10, value=1, step=0.25),
+                     selectInput("GAM.METHOD",
+                                 "Smoothing Method",
+                                 smoothing.methods),
                      selectInput("GAM.SMOOTHCONSTRUCTION",
-                                 "Construction of Smoothing Term(s)",
+                                 "Construction of Smoothing Term",
                                  smoothing.constructions),
                      selectInput("GAM.COVARIATES", "Control for Biocovariates:",
                                  "", multiple=TRUE),

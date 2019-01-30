@@ -189,10 +189,10 @@ function(input, output, session) {
                                                        SMOOTH.CONSTRUCTION=input$GAM.SMOOTHCONSTRUCTION)
     gam.formula <- as.formula(gam.formula.string)
     if (input$Z.TRANSFORM=="Binary"){
-      gam.fit <- gam(gam.formula, data=selectedData(), method="REML",
+      gam.fit <- gam(gam.formula, data=selectedData(), method=input$GAM.METHOD,
                      gamma=input$GAM.GAMMA, family=binomial)
     } else {
-      gam.fit <- gam(gam.formula, data=selectedData(), method="REML",
+      gam.fit <- gam(gam.formula, data=selectedData(), method=input$GAM.METHOD,
                      gamma=input$GAM.GAMMA)
     }
     
