@@ -296,6 +296,45 @@ function(input, output, session) {
              cex = 1.0, col=c("red", "darkgreen"), lty=c(2, 2), lwd=c(1, 1))
     }
     
+    if (input$CONTOURS.SE > 0 & input$CONTOURS.MASK){
+      # finite difference approximation of gradient
+      eps <- 1e-4
+      xy.grid.dy <- xy.grid.dx <- xy.grid
+      xy.grid.dx[, 1] <- xy.grid.dx[, 1] + eps
+      xy.grid.dy[, 2] <- xy.grid.dy[, 2] + eps
+      # predict values
+      xy.pred <- predict(gamFit(), newdata=xy.grid, type="response", se=TRUE)
+      xy.pred.dx <- predict(gamFit(), newdata=xy.grid.dx, type="response", se=TRUE)
+      xy.pred.dy <- predict(gamFit(), newdata=xy.grid.dy, type="response", se=TRUE)
+      # estimate dx, dy
+      z.pred.y1 <- z.pred.x1 <- xy.pred$fit
+      z.pred.x2 <- xy.pred.dx$fit
+      dx <- (z.pred.x2 - z.pred.x1) / eps
+      z.pred.y2 <- xy.pred.dy$fit
+      dy <- (z.pred.y2 - z.pred.y1) / eps
+      # estimate dx, dy of upper-bound surface
+      z.pred.y1.upr <- z.pred.x1.upr <- xy.pred$fit + input$CONTOURS.SE * xy.pred$se.fit
+      z.pred.x2.upr <- xy.pred.dx$fit + input$CONTOURS.SE * xy.pred.dx$se.fit
+      dx.upr <- (z.pred.x2.upr - z.pred.x1.upr) / eps
+      z.pred.y2.upr <- xy.pred.dy$fit + input$CONTOURS.SE * xy.pred.dy$se.fit
+      dy.upr <- (z.pred.y2.upr - z.pred.y1.upr) / eps
+      # estimate dx, dy of lower-bound surface
+      z.pred.y1.lwr <- z.pred.x1.lwr <- xy.pred$fit - input$CONTOURS.SE * xy.pred$se.fit
+      z.pred.x2.lwr <- xy.pred.dx$fit - input$CONTOURS.SE * xy.pred.dx$se.fit
+      dx.lwr <- (z.pred.x2.lwr - z.pred.x1.lwr) / eps
+      z.pred.y2.lwr <- xy.pred.dy$fit - input$CONTOURS.SE * xy.pred.dy$se.fit
+      dy.lwr <- (z.pred.y2.lwr - z.pred.y1.lwr) / eps
+      # create mask
+      dx.agreement <- (dx.upr>0 & dx.lwr>0) | (dx.upr<0 & dx.lwr<0)
+      dy.agreement <- (dy.upr>0 & dy.lwr>0) | (dy.upr<0 & dy.lwr<0)
+      grad.agreement <- dx.agreement & dy.agreement
+      grad.mask <- rep(1, length(grad.agreement))
+      grad.mask[grad.agreement] <- NA
+      grad.mask.grid <- matrix(grad.mask, nrow=n.grid, byrow=FALSE)
+      image(x=x.seq, y=y.seq, z=grad.mask.grid, add=TRUE,
+            col=gray.colors(12, start=1, end=1, alpha=input$CONTOURS.MASKALPHA))
+    }
+    
     if (input$CONTOURS.POINTS){
       
       if (input$CONTOURS.POINTCOLORS){

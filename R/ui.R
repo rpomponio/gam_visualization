@@ -54,19 +54,6 @@ fluidPage(
                                 plotOutput("xy_scatter", height="600px"),
                                 plotOutput("xz_scatter", height="600px"),
                                 plotOutput("yz_scatter", height="600px")),
-                       tabPanel("Heatmap",
-                                plotOutput("knn_heatmap", height="800px"),
-                                wellPanel(h4("Contours Settings"),
-                                          sliderInput("HEATMAP.NEIGHBORS",
-                                                      "KNN Number of Neighbors (Resolution)",
-                                                      min=1, max=100, value=10, step=1),
-                                          checkboxInput("HEATMAP.POINTS",
-                                                        "Plot Data Points",
-                                                        value=TRUE),
-                                          sliderInput("HEATMAP.EXCLUSION",
-                                                      "Grid Exclusion Distance",
-                                                      min=0, max=0.5, value=0.1, step=0.01))
-                                ),
                        tabPanel("GAM",
                                 h4("Summary of GAM fit:"),
                                 verbatimTextOutput("gam_summary", placeholder=TRUE),
@@ -99,6 +86,12 @@ fluidPage(
                                           sliderInput("CONTOURS.SE",
                                                       "Show Confidence Bands: Number of SEs",
                                                       min=0, max=5, value=0, step=0.05),
+                                          checkboxInput("CONTOURS.MASK",
+                                                        "Mask Regions Where Function is Likely Not Increasing/Decreasing",
+                                                        value=FALSE),
+                                          sliderInput("CONTOURS.MASKALPHA",
+                                                      "Mask Transparency",
+                                                      min=0, max=1, value=0.75, step=0.05),
                                           fluidRow(column(6, "Predict Z-Variable (Red)",
                                                           numericInput("CONTOURS.XVAL1",
                                                                        "Value of X-Variable to Predict",
@@ -139,7 +132,20 @@ fluidPage(
                                   sliderInput("PARTIAL.ALPHA",
                                               "CI Alpha (95% CI: alpha=0.05)",
                                               min=0, max=1, value=0.05, step=0.05))
-                                ))
+                                ),
+                       tabPanel("Heatmap",
+                                plotOutput("knn_heatmap", height="800px"),
+                                wellPanel(h4("Contours Settings"),
+                                          sliderInput("HEATMAP.NEIGHBORS",
+                                                      "KNN Number of Neighbors (Resolution)",
+                                                      min=1, max=100, value=10, step=1),
+                                          checkboxInput("HEATMAP.POINTS",
+                                                        "Plot Data Points",
+                                                        value=TRUE),
+                                          sliderInput("HEATMAP.EXCLUSION",
+                                                      "Grid Exclusion Distance",
+                                                      min=0, max=0.5, value=0.1, step=0.01))
+                       ))
     )
   )
 )
