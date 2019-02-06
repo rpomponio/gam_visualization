@@ -20,7 +20,7 @@ The intended context of this application is in neuroimaging. A dummy dataset has
 ## Main Visualization
 The figure under the "Contours" tab offers a view of the relationship between the three selected variables.
 
-![alt text](https://github.com/rpomponio/gam_visualization/img/1_contours_demo.png)
+![alt text](https://github.com/rpomponio/gam_visualization/tree/master/img/1_contours_demo.png)
 
 ## Installation
 
