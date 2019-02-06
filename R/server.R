@@ -27,6 +27,12 @@ function(input, output, session) {
     selected.data <- subset(selected.data, SEX%in%input$SEX.GROUP)
     selected.data <- subset(selected.data,
                             AGE>=input$AGE.RANGE[1] & AGE<=input$AGE.RANGE[2])
+    # normalize by ICV
+    if (input$Y.NORMALIZE){
+      original.values <- selected.data[, input$Y.COL]
+      selected.data[, input$Y.COL] <- original.values / selected.data[, "ICV"]
+    }
+    # execute transforms
     cols.to.transform <- c("X.COL", "Y.COL", "Z.COL")
     transforms <- c("X.TRANSFORM", "Y.TRANSFORM", "Z.TRANSFORM")
     for (i in 1:3){
@@ -78,6 +84,9 @@ function(input, output, session) {
   })
 
   # PLOT HISTOGRAM OF X-VARIABLE
+  output$x_summary <- renderPrint({
+    summary(selectedData()[, input$X.COL])
+  })
   output$x_histogram <- renderPlot({
     par(cex=1.5)
     plt.title <- paste("Histogram of Selected X-Variable")
@@ -86,6 +95,9 @@ function(input, output, session) {
   })
 
   # PLOT HISTOGRAM OF Y-VARIABLE
+  output$y_summary <- renderPrint({
+    summary(selectedData()[, input$Y.COL])
+  })
   output$y_histogram <- renderPlot({
     par(cex=1.5)
     if (input$Y.TRANSFORM=="Categorical"){
@@ -100,6 +112,9 @@ function(input, output, session) {
   })
 
   # PLOT HISTOGRAM OF Z-VARIABLE
+  output$z_summary <- renderPrint({
+    summary(selectedData()[, input$Z.COL])
+  })
   output$z_histogram <- renderPlot({
     par(cex=1.5)
     if (input$Z.TRANSFORM=="Binary"){
@@ -356,18 +371,44 @@ function(input, output, session) {
              pch=4, cex=4.0, col="darkred")
       df.point <- data.frame(x=input$CONTOURS.XVAL1, y=input$CONTOURS.YVAL1)
       names(df.point) <- c(input$X.COL, input$Y.COL)
-      point.pred <- predict(gamFit(), newdata=df.point, type="response")
-      point.text <- paste0("PREDICTED VALUE: ", round(point.pred, 3))
-      text(input$CONTOURS.XVAL1, input$CONTOURS.YVAL1, point.text, pos=4, offset=0.75, col="darkred")
+      point.pred.se <- predict(gamFit(), newdata=df.point, type="response", se=TRUE)
+      point.pred <- point.pred.se$fit
+      point.se <- point.pred.se$se.fit
+      point.text <- paste0("PREDICTED VALUE: ", round(point.pred, 3), " (SE: ", round(point.se, 3), ")")
+      text(input$CONTOURS.XVAL1, input$CONTOURS.YVAL1, point.text, pos=4, offset=0.75, col="darkred", cex=0.75)
     }
     if (!is.na(input$CONTOURS.XVAL2)&!is.na(input$CONTOURS.YVAL2)){
       points(input$CONTOURS.XVAL2, input$CONTOURS.YVAL2,
              pch=4, cex=4.0, col="darkblue")
       df.point <- data.frame(x=input$CONTOURS.XVAL2, y=input$CONTOURS.YVAL2)
       names(df.point) <- c(input$X.COL, input$Y.COL)
-      point.pred <- predict(gamFit(), newdata=df.point, type="response")
-      point.text <- paste0("PREDICTED VALUE: ", round(point.pred, 3))
-      text(input$CONTOURS.XVAL2, input$CONTOURS.YVAL2, point.text, pos=4, offset=0.75, col="darkblue")
+      point.pred.se <- predict(gamFit(), newdata=df.point, type="response", se=TRUE)
+      point.pred <- point.pred.se$fit
+      point.se <- point.pred.se$se.fit
+      point.text <- paste0("PREDICTED VALUE: ", round(point.pred, 3), " (SE: ", round(point.se, 3), ")")
+      text(input$CONTOURS.XVAL2, input$CONTOURS.YVAL2, point.text, pos=4, offset=0.75, col="darkblue", cex=0.75)
+    }
+    if (!is.na(input$CONTOURS.XVAL3)&!is.na(input$CONTOURS.YVAL3)){
+      points(input$CONTOURS.XVAL3, input$CONTOURS.YVAL3,
+             pch=2, cex=4.0, col="darkred")
+      df.point <- data.frame(x=input$CONTOURS.XVAL3, y=input$CONTOURS.YVAL3)
+      names(df.point) <- c(input$X.COL, input$Y.COL)
+      point.pred.se <- predict(gamFit(), newdata=df.point, type="response", se=TRUE)
+      point.pred <- point.pred.se$fit
+      point.se <- point.pred.se$se.fit
+      point.text <- paste0("PREDICTED VALUE: ", round(point.pred, 3), " (SE: ", round(point.se, 3), ")")
+      text(input$CONTOURS.XVAL3, input$CONTOURS.YVAL3, point.text, pos=4, offset=0.75, col="darkred", cex=0.75)
+    }
+    if (!is.na(input$CONTOURS.XVAL4)&!is.na(input$CONTOURS.YVAL4)){
+      points(input$CONTOURS.XVAL4, input$CONTOURS.YVAL4,
+             pch=2, cex=4.0, col="darkblue")
+      df.point <- data.frame(x=input$CONTOURS.XVAL4, y=input$CONTOURS.YVAL4)
+      names(df.point) <- c(input$X.COL, input$Y.COL)
+      point.pred.se <- predict(gamFit(), newdata=df.point, type="response", se=TRUE)
+      point.pred <- point.pred.se$fit
+      point.se <- point.pred.se$se.fit
+      point.text <- paste0("PREDICTED VALUE: ", round(point.pred, 3), " (SE: ", round(point.se, 3), ")")
+      text(input$CONTOURS.XVAL4, input$CONTOURS.YVAL4, point.text, pos=4, offset=0.75, col="darkblue", cex=0.75)
     }
     
   })
