@@ -27,6 +27,11 @@ function(input, output, session) {
     selected.data <- subset(selected.data, SEX%in%input$SEX.GROUP)
     selected.data <- subset(selected.data,
                             AGE>=input$AGE.RANGE[1] & AGE<=input$AGE.RANGE[2])
+    # remove zeros
+    if (input$Y.EXCLUDEZEROS){
+      original.values <- selected.data[, input$Y.COL]
+      selected.data <- selected.data[original.values!=0, ]
+    }
     # normalize by ICV
     if (input$Y.NORMALIZE){
       original.values <- selected.data[, input$Y.COL]
@@ -274,7 +279,7 @@ function(input, output, session) {
     vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL), type="response",
             plot.type="contour", too.far=input$CONTOURS.EXCLUSION, n.grid=100,
             main=plt.title, color="cm", contour.col="black", xlab=x.lab, ylab=y.lab,
-            labcex=1.5, method="edge", nlevels=input$CONTOURS.NLEVELS)
+            labcex=1.5, method=input$CONTOURS.LABELMETHOD, nlevels=input$CONTOURS.NLEVELS)
     
     if (input$CONTOURS.SE > 0){
       # number of grid nodes in one dimension (same as vis.gam)
@@ -358,7 +363,7 @@ function(input, output, session) {
         # This vector of color values based on the continuous variable
         point.colors <- rbPal(10)[as.numeric(cut(selectedData()[, input$Z.COL], breaks=10))]
       } else {
-        point.colors <- "gray18"
+        point.colors <- gray.colors(1, start=0, end=0, alpha=0.50)
       }
 
       points(selectedData()[, input$X.COL], selectedData()[, input$Y.COL],

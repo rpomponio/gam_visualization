@@ -3,6 +3,7 @@
 variable.transforms <- c("None", "Natural Log", "Cubic Root", "Categorical", "Binary")
 smoothing.methods <- c("REML", "ML", "GCV.Cp")
 smoothing.constructions <- c("te(x, y)", "s(x, y)", "s(x) + s(y)")
+contour.methods <- c("edge", "flattest", "simple")
 
 fluidPage(
   headerPanel("Interactive Visualization"),
@@ -16,6 +17,7 @@ fluidPage(
                      selectInput("X.TRANSFORM", "X-Variable Transformation", variable.transforms),
                      selectInput("Y.TRANSFORM", "Y-Variable Transformation", variable.transforms),
                      checkboxInput("Y.NORMALIZE", "Normalize Y-Variable by ICV", FALSE),
+                     checkboxInput("Y.EXCLUDEZEROS", "Exclude Zeros from Y-Variable", FALSE),
                      selectInput("Z.TRANSFORM", "Z-Variable Transformation", variable.transforms)),
            wellPanel(h4("Data Filters"),
                      selectInput("STUDIES.SUBSET", "Selected Studies",
@@ -39,7 +41,7 @@ fluidPage(
                                  smoothing.constructions),
                      selectInput("GAM.COVARIATES", "Control for Biocovariates:",
                                  "", multiple=TRUE),
-                     checkboxInput("GAM.STUDY", "Control for Study", FALSE))
+                     checkboxInput("GAM.STUDY", "Control for Study", TRUE))
            ),
     column(8,
            tabsetPanel(type="tabs",
@@ -95,7 +97,11 @@ fluidPage(
                                                         value=FALSE),
                                           sliderInput("CONTOURS.MASKALPHA",
                                                       "Mask Transparency",
-                                                      min=0, max=1, value=0.75, step=0.05),
+                                                      min=0, max=1, value=0.75, step=0.05,
+                                                      width="250px"),
+                                          selectInput("CONTOURS.LABELMETHOD",
+                                                      "Contour Labels Position",
+                                                      contour.methods, width="250px"),
                                           fluidRow(column(6, "Predict Z-Variable (Red X)",
                                                           numericInput("CONTOURS.XVAL1",
                                                                        "Value of X-Variable to Predict",
