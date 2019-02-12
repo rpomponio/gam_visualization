@@ -103,8 +103,12 @@ construct_gam_formula_string <- function(X.COL, Y.COL, Z.COL,
   return(gam.formula.string)
 }
 
-
-
+################################################################################
+# Helper function for taking cube root of a negative number
+Math.cbrt <- function(x) {
+  sign(x) * abs(x)^(1/3)
+}
+# See: https://stackoverflow.com/questions/13236158/real-cube-root-of-a-negative-number
 
 
 

@@ -47,7 +47,7 @@ function(input, output, session) {
       if (transform=="Natural Log"){
         selected.data[, input[[col]]] <- log(original.values + 1)
       } else if (transform=="Cubic Root"){
-        selected.data[, input[[col]]] <- (original.values) ^ (1/3)
+        selected.data[, input[[col]]] <- Math.cbrt(original.values)
       } else if (transform=="Categorical"){
         selected.data[, input[[col]]] <- as.factor(original.values)
       } else if (transform=="Binary"){
