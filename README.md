@@ -34,8 +34,6 @@ The values in "KEY\_NAME" are essential variables necessary to run the app like 
 
 ## Questions
 
-Email Ray Pomponio: raymond (dot) pomponio (at) uphs (dot) upenn (dot) edu
+Email Ray Pomponio: raymond (dot) pomponio (at) pennmedicine (dot) upenn (dot) edu
 
-## Deprecation
 
-As of February 18, 2019, this repository is no longer regularly maintained.
