@@ -1,4 +1,5 @@
 # GAM Visualization
+
 An interactive visualization of GAM models using R Shiny package.
 
 A user will need basic familiarity with the R programming language to run this application.
@@ -24,13 +25,17 @@ The figure under the "Contours" tab offers a view of the relationship between th
 
 ## Installation
 
-1. Run install.R to ensure the necessary packages are installed.
-2. Copy your dataset into the R/data/ folder so that it will be loaded properly.
-3. Update the Column Dictionary in R/column\_dictionary following the guide below:
+1. Run `install.R` to ensure the necessary packages are installed.
+2. Copy your dataset into the `R/data/` folder so that it will be loaded properly.
+3. Update the Column Dictionary in `R/column\_dictionary` following the guide below:
 
 The values in "KEY\_NAME" are essential variables necessary to run the app like AGE and SEX. The values in "COL\_NAME" are the corresponding columns in your dataset, which may or may not be named equivalently. You should modify this file to adapt to your dataset. Additionally, you can hide columns from appearing in the application if you assign them the value of "REMOVE" in the KEY\_NAME column.
 
-4. Update R/helpers.R to identify the path to your dataset, the default variables selected in the application, and any essential label schemes like the use of "M", "F" to reflect males and females, respectively.
+4. Update `R/helpers.R` to identify the path to your dataset, the default variables selected in the application, and any essential label schemes like the use of "M", "F" to reflect males and females, respectively.
+
+## Quick Start
+
+After installation, open the script `R/UI.R` in RStudio and launch the app from the upper right corner, where a button will say "Run App".
 
 ## Questions
 
