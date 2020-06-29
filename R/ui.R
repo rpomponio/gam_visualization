@@ -10,6 +10,13 @@ fluidPage(
   fluidRow(
     column(4,
            wellPanel(h4("Main"),
+                     # Input: Select a file ----
+                     fileInput("file1", "Choose CSV File",multiple=F,
+                               accept=c("text/csv",
+                                        "text/comma-separated-values,text/plain",
+                                        ".csv")),
+                     # Horizontal line ----
+                     tags$hr(),
                      selectInput("X.COL", "X-Variable", ""),
                      selectInput("Y.COL", "Y-Variable / Categorical Variable", ""),
                      selectInput("Z.COL", "Z-Variable", "")),
