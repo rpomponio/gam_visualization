@@ -1,37 +1,37 @@
 
 # HARDCODED PARAMETERS
 variable.transforms <- c("None", "Natural Log", "Cubic Root", "Categorical", "Binary")
+presaved.fits <- c("2A: TMT vs Age, Brain-Age")
 # smoothing.methods <- c("REML", "ML", "GCV.Cp")
 # smoothing.constructions <- c("te(x, y)", "s(x, y)", "s(x) + s(y)")
 # contour.methods <- c("edge", "flattest", "simple")
 
 fluidPage(
-  headerPanel("Interactive Visualization"),
+  headerPanel("Interactive GAM Visualization"),
   fluidRow(
     column(4,
            wellPanel(
              h4("Main"),
-             # Input: Select a file ----
-             fileInput(
+             fileInput( # Input: Select a file ----
                "file1", "Choose CSV File",multiple=F, accept=c("text/csv", "text/comma-separated-values,text/plain",".csv")),
-             # Horizontal line ----
-             tags$hr(),
-             selectInput("X.COL", "X-Variable", ""),
-             selectInput("Y.COL", "Y-Variable / Categorical Variable", ""),
-             selectInput("Z.COL", "Z-Variable", "")),
+             tags$hr(), # Horizontal line ----
+             selectInput("X.COL", "X-Variable (Predictor #1)", ""),
+             selectInput("Y.COL", "Y-Variable (Predictor #2)", ""),
+             selectInput("Z.COL", "Z-Variable (Response)", "")),
+           wellPanel(
+             h4("Pre-saved Isocontours"),
+             selectInput("PRESAVED.FIT", "Select Figure", presaved.fits),
+             checkboxInput("PLOT.PRESAVED.FIT", "Plot pre-saved isocontours", TRUE)),
+             # selectInput("DIAGNOSIS.GROUP", "Diagnosis Group", "", selected="", multiple=TRUE),
+             # selectInput("SEX.GROUP", "Sex Group", "", selected="", multiple=TRUE),
+             # sliderInput("AGE.RANGE", "Age Range", min=0, max=100, value=c(0, 100), step=1)),
            wellPanel(
              h4("Variable Transformations"),
              selectInput("X.TRANSFORM", "X-Variable Transformation", variable.transforms),
              selectInput("Y.TRANSFORM", "Y-Variable Transformation", variable.transforms),
              checkboxInput("Y.NORMALIZE", "Normalize Y-Variable by ICV", FALSE),
              checkboxInput("Y.EXCLUDEZEROS", "Exclude Zeros from Y-Variable", FALSE),
-             selectInput("Z.TRANSFORM", "Z-Variable Transformation", variable.transforms)),
-           wellPanel(
-             h4("Data Filters"),
-             selectInput("STUDIES.SUBSET", "Selected Studies", "", selected="", multiple=TRUE),
-             selectInput("DIAGNOSIS.GROUP", "Diagnosis Group", "", selected="", multiple=TRUE),
-             selectInput("SEX.GROUP", "Sex Group", "", selected="", multiple=TRUE),
-             sliderInput("AGE.RANGE", "Age Range", min=0, max=100, value=c(0, 100), step=1)),
+             selectInput("Z.TRANSFORM", "Z-Variable Transformation", variable.transforms))
            # wellPanel(
            #   h4("GAM Settings"),
            #   sliderInput("GAM.K", "Number of Knots (Flexibility)", min=3, max=8, value=5, step=1),
@@ -41,7 +41,31 @@ fluidPage(
            #   selectInput("GAM.COVARIATES", "Control for Biocovariates:", "", multiple=TRUE),
            #   checkboxInput("GAM.STUDY", "Control for Study", TRUE))
            ),
-    # column(8,
+    column(8,
+           tabsetPanel(
+             type="tabs",
+             tabPanel(
+               "Summary",
+               h4("Description of uploaded data."),
+               plotOutput("x_histogram"),
+               verbatimTextOutput("x_summary", placeholder=TRUE),
+               plotOutput("y_histogram"),
+               verbatimTextOutput("y_summary", placeholder=TRUE),
+               plotOutput("z_histogram"),
+               verbatimTextOutput("z_summary", placeholder=TRUE)),
+             tabPanel(
+               "GAM Diagnostic",
+               h4("Summary of selected GAM fit."),
+               verbatimTextOutput("gam_summary", placeholder=TRUE),
+               h4("Performance of GAM fit."),
+               verbatimTextOutput("gam_performance", placeholder=TRUE),
+               h4("Output from gam.check()."),
+               verbatimTextOutput("gam_check", placeholder=TRUE)),
+             tabPanel(
+               "Isocontours",
+               plotOutput("gam_contours", height="600px")))
+           )
+                       
     #        tabsetPanel(type="tabs",
     #                    tabPanel("Summary",
     #                             h4("Description of selected data:"),
@@ -58,13 +82,7 @@ fluidPage(
     #                             plotOutput("xy_scatter", height="600px"),
     #                             plotOutput("xz_scatter", height="600px"),
     #                             plotOutput("yz_scatter", height="600px")),
-    #                    tabPanel("GAM",
-    #                             h4("Summary of GAM fit:"),
-    #                             verbatimTextOutput("gam_summary", placeholder=TRUE),
-    #                             h4("Performance of GAM fit:"),
-    #                             verbatimTextOutput("gam_performance", placeholder=TRUE),
-    #                             h4("Output from gam.check():"),
-    #                             verbatimTextOutput("gam_check", placeholder=TRUE)),
+
     #                    tabPanel("3D",
     #                             plotOutput("gam_persp", height="600px"),
     #                             wellPanel(h4("Perspective Settings"),

@@ -1,18 +1,26 @@
-# options(warn=-1)
+library(mgcv)
+options(warn=-1, stringsAsFactors=F)
 load("../private/fit_2a.rdata")
 
 function(input, output, session) {
   
-  # # DEFINE SELECTABLE VARIABLES
-  # observe({
-  #   updateSelectInput(session, "X.COL", choices=selectable.variables, selected=default.x.col)
-  #   updateSelectInput(session, "Y.COL", choices=selectable.variables, selected=default.y.col)
-  #   updateSelectInput(session, "Z.COL", choices=selectable.variables, selected=default.z.col)
+  # upload csv file
+  uploadedData <- reactive({
+    req(input$file1)
+    df <- read.csv(input$file1$datapath)
+    df
+  })
+  
+  # update UI to accomodate input file
+  observe({
+    updateSelectInput(session, "X.COL", choices=colnames(uploadedData()), selected=colnames(uploadedData())[1])
+    updateSelectInput(session, "Y.COL", choices=colnames(uploadedData()), selected=colnames(uploadedData())[2])
+    updateSelectInput(session, "Z.COL", choices=colnames(uploadedData()), selected=colnames(uploadedData())[3])
   #   updateSelectInput(session, "STUDIES.SUBSET", choices=studies, selected=default.studies)
   #   updateSelectInput(session, "DIAGNOSIS.GROUP", choices=diagnosis.groups, selected=default.diagnosis)
   #   updateSelectInput(session, "SEX.GROUP", choices=sex.groups, selected=default.sex)
   #   updateSelectInput(session, "GAM.COVARIATES", choices=biological.covariates)
-  # })
+  })
   # 
   # # SELECT DATA BASED ON UI INPUT
   # selectedData <- reactive({
@@ -88,16 +96,88 @@ function(input, output, session) {
   #   text(plt, tbl + 200, labels=tbl)
   # })
   # 
-  # # PLOT HISTOGRAM OF X-VARIABLE
-  # output$x_summary <- renderPrint({
-  #   summary(selectedData()[, input$X.COL])
-  # })
-  # output$x_histogram <- renderPlot({
-  #   par(cex=1.5)
-  #   plt.title <- paste("Histogram of Selected X-Variable")
-  #   hist(selectedData()[, input$X.COL], col="gray", breaks=50,
-  #        main=plt.title, xlab=input$X.COL)
-  # })
+  
+  # histograms and summaries of variables
+  output$x_histogram <- renderPlot({
+    par(cex=1.5)
+    plt.title <- paste("Histogram of Selected X-Variable:", input$X.COL)
+    hist(uploadedData()[, input$X.COL], col="gray", breaks=50, main=plt.title, xlab="")
+  })
+  output$x_summary <- renderPrint({
+    summary(uploadedData()[, input$X.COL])
+  })
+  output$y_histogram <- renderPlot({
+    par(cex=1.5)
+    plt.title <- paste("Histogram of Selected Y-Variable:", input$Y.COL)
+    hist(uploadedData()[, input$Y.COL], col="gray", breaks=50, main=plt.title, xlab="")
+  })
+  output$y_summary <- renderPrint({
+    summary(uploadedData()[, input$Y.COL])
+  })
+  output$z_histogram <- renderPlot({
+    par(cex=1.5)
+    plt.title <- paste("Histogram of Selected Z-Variable:", input$Z.COL)
+    hist(uploadedData()[, input$Z.COL], col="gray", breaks=50, main=plt.title, xlab="")
+  })
+  output$z_summary <- renderPrint({
+    summary(uploadedData()[, input$Z.COL])
+  })
+  
+  # fit gam to uploaded data
+  gamFit <- reactive({
+    covars <- input$GAM.COVARIATES
+    gam.formula.string <- paste0(input$Z.COL, " ~ s(", input$X.COL, ", ", input$Y.COL, ")")
+    gam.formula <- as.formula(gam.formula.string)
+    if (input$Z.TRANSFORM=="Binary"){
+      gam.fit <- gam.fit <- gam(gam.formula, data=uploadedData(), method="REML", family="binomial")
+    } else {
+      gam.fit <- gam(gam.formula, data=uploadedData(), method="REML")
+    }
+    gam.fit
+  })
+  output$gam_summary <- renderPrint({
+    if (is.null(input$file1)){
+      cat("Upload csv first")
+    }
+    else{
+      summary(gamFit())
+    }
+  })
+  output$gam_performance <- renderPrint({
+    if (is.null(input$file1)){
+      cat("Upload csv first")
+    }
+    else{
+      mae <- mean(abs(predict(gamFit()) - uploadedData()[, input$Z.COL]))
+      cat("Mean Absolute Error (MAE): ", mae)
+    }
+  })
+  output$gam_check <- renderPrint({
+    if (is.null(input$file1)){
+      cat("Upload csv first")
+    }
+    else{
+      gam.check(gamFit())
+    }
+  })
+  
+  # plot pre-saved isocontours or newly-fitted isocontours
+  output$gam_contours <- renderPlot({
+    if (input$PLOT.PRESAVED.FIT){
+      plt.title <- paste0(input$PRESAVED.FIT)
+      image(fit.2a$x, fit.2a$y, fit.2a$Z, col=cm.colors(10), main=plt.title, xlab="", ylab="")
+      contour(fit.2a$x, fit.2a$y, fit.2a$Z, nlevels=10, add=T, levels=fit.2a$levels, labcex=1.25)
+    } else{
+      plt.title <- paste0(input$Z.COL, " (N=", nrow(uploadedData()),")")
+      vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL), type="response",
+              plot.type="contour", too.far=0.05, n.grid=100,
+              main=plt.title, contour.col="black",
+              xlab=input$X.COL, ylab=input$Y.COL, labcex=1.5,
+              method="edge", nlevels=10)
+      points(uploadedData()[, input$X.COL], uploadedData()[, input$Y.COL], pch=16)
+    }
+  })
+  
   # 
   # # PLOT HISTOGRAM OF Y-VARIABLE
   # output$y_summary <- renderPrint({
@@ -195,42 +275,9 @@ function(input, output, session) {
   # })
   # 
   # 
-  # # FIT GAM MODEL AND PRODUCE SUMMARY
-  # gamFit <- reactive({
-  #   y.categorical <- input$Y.TRANSFORM=="Categorical"
-  #   covars <- input$GAM.COVARIATES
-  #   if (input$GAM.STUDY){ covars <- c(covars, "STUDY") }
-  #   gam.formula.string <- construct_gam_formula_string(input$X.COL,
-  #                                                      input$Y.COL,
-  #                                                      input$Z.COL,
-  #                                                      COVARIATES=covars,
-  #                                                      GAM.K=input$GAM.K,
-  #                                                      Y.CATEGORICAL=y.categorical,
-  #                                                      SMOOTH.CONSTRUCTION=input$GAM.SMOOTHCONSTRUCTION)
-  #   gam.formula <- as.formula(gam.formula.string)
-  #   if (input$Z.TRANSFORM=="Binary"){
-  #     gam.fit <- gam(gam.formula, data=selectedData(), method=input$GAM.METHOD,
-  #                    gamma=input$GAM.GAMMA, family=binomial)
-  #   } else {
-  #     gam.fit <- gam(gam.formula, data=selectedData(), method=input$GAM.METHOD,
-  #                    gamma=input$GAM.GAMMA)
-  #   }
-  #   
-  #   gam.fit
-  # })
-  # output$gam_summary <- renderPrint({
-  #   summary(gamFit())
-  # })
-  # output$gam_performance <- renderPrint({
-  #   mae <- mean(abs(predict(gamFit()) - selectedData()[, input$Z.COL]))
-  #   print("Mean Absolute Error (MAE):")
-  #   mae
-  # })
-  # 
-  # # CHECK GAM WITH DIAGNOSTICS
-  # output$gam_check <- renderPrint({
-  #   gam.check(gamFit())
-  # })
+
+
+
   # 
   # # FIT INDIVIDUAL GAMS FOR X, Y VARIABLES
   # RSqXY <- reactive({
@@ -264,22 +311,9 @@ function(input, output, session) {
   #   }
   # })
   # 
-  # # VISUALIZE GAM CONTOURS
-  # output$gam_contours <- renderPlot({
-  #   plt.title <- paste0(input$Z.COL, " (N=", nrow(selectedData()),")")
-  # 
-  #   if (input$CONTOURS.RSQ){
-  #     x.lab <- paste0(input$X.COL, " (R-Sq: ", RSqXY()[1], ")")
-  #     y.lab <- paste0(input$Y.COL, " (R-Sq: ", RSqXY()[2], ")")
-  #   } else {
-  #     x.lab <- input$X.COL
-  #     y.lab <- input$Y.COL
-  #   }
+
   #   
-  #   vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL), type="response",
-  #           plot.type="contour", too.far=input$CONTOURS.EXCLUSION, n.grid=100,
-  #           main=plt.title, color="cm", contour.col="black", xlab=x.lab, ylab=y.lab,
-  #           labcex=1.5, method=input$CONTOURS.LABELMETHOD, nlevels=input$CONTOURS.NLEVELS)
+
   #   
   #   if (input$CONTOURS.SE > 0){
   #     # number of grid nodes in one dimension (same as vis.gam)
@@ -366,8 +400,7 @@ function(input, output, session) {
   #       point.colors <- gray.colors(1, start=0, end=0, alpha=0.50)
   #     }
   # 
-  #     points(selectedData()[, input$X.COL], selectedData()[, input$Y.COL],
-  #            pch=16, cex=input$CONTOURS.POINTSIZE, col=point.colors)
+
   #   }
   #   
   #   # Plot predicted values
