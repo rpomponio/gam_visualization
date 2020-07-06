@@ -1,46 +1,33 @@
 
 # HARDCODED PARAMETERS
-variable.transforms <- c("None", "Natural Log", "Cubic Root", "Categorical", "Binary")
+variable.transforms <- c("None", "Natural Log", "Cubic Root", "Binary")
 presaved.fits <- c("2A: TMT vs Age, Brain-Age")
-# smoothing.methods <- c("REML", "ML", "GCV.Cp")
-# smoothing.constructions <- c("te(x, y)", "s(x, y)", "s(x) + s(y)")
-# contour.methods <- c("edge", "flattest", "simple")
 
 fluidPage(
   headerPanel("Interactive GAM Visualization"),
   fluidRow(
     column(4,
            wellPanel(
-             h4("Main"),
-             fileInput( # Input: Select a file ----
-               "file1", "Choose CSV File",multiple=F, accept=c("text/csv", "text/comma-separated-values,text/plain",".csv")),
-             tags$hr(), # Horizontal line ----
-             selectInput("X.COL", "X-Variable (Predictor #1)", ""),
-             selectInput("Y.COL", "Y-Variable (Predictor #2)", ""),
-             selectInput("Z.COL", "Z-Variable (Response)", "")),
-           wellPanel(
              h4("Pre-saved Isocontours"),
              selectInput("PRESAVED.FIT", "Select Figure", presaved.fits),
              checkboxInput("PLOT.PRESAVED.FIT", "Plot pre-saved isocontours", TRUE)),
-             # selectInput("DIAGNOSIS.GROUP", "Diagnosis Group", "", selected="", multiple=TRUE),
-             # selectInput("SEX.GROUP", "Sex Group", "", selected="", multiple=TRUE),
-             # sliderInput("AGE.RANGE", "Age Range", min=0, max=100, value=c(0, 100), step=1)),
-           wellPanel(
-             h4("Variable Transformations"),
+           # selectInput("DIAGNOSIS.GROUP", "Diagnosis Group", "", selected="", multiple=TRUE),
+           # selectInput("SEX.GROUP", "Sex Group", "", selected="", multiple=TRUE),
+           # sliderInput("AGE.RANGE", "Age Range", min=0, max=100, value=c(0, 100), step=1)),
+          wellPanel(
+             h4("Upload New Data"),
+             fileInput(
+               "file1", "Choose CSV File",multiple=F, accept=c("text/csv", "text/comma-separated-values,text/plain",".csv")),
+             tags$hr(),
+             selectInput("X.COL", "X-Variable (Predictor #1)", ""),
+             selectInput("Y.COL", "Y-Variable (Predictor #2)", ""),
+             selectInput("Z.COL", "Z-Variable (Response)", ""),
+             tags$hr(),
              selectInput("X.TRANSFORM", "X-Variable Transformation", variable.transforms),
              selectInput("Y.TRANSFORM", "Y-Variable Transformation", variable.transforms),
-             checkboxInput("Y.NORMALIZE", "Normalize Y-Variable by ICV", FALSE),
-             checkboxInput("Y.EXCLUDEZEROS", "Exclude Zeros from Y-Variable", FALSE),
-             selectInput("Z.TRANSFORM", "Z-Variable Transformation", variable.transforms))
-           # wellPanel(
-           #   h4("GAM Settings"),
-           #   sliderInput("GAM.K", "Number of Knots (Flexibility)", min=3, max=8, value=5, step=1),
-           #   sliderInput("GAM.GAMMA", "Gamma (Smoothness)", min=1, max=10, value=1, step=0.25),
-           #   selectInput("GAM.METHOD","Smoothing Method",smoothing.methods),
-           #   selectInput("GAM.SMOOTHCONSTRUCTION","Construction of Smoothing Term",smoothing.constructions),
-           #   selectInput("GAM.COVARIATES", "Control for Biocovariates:", "", multiple=TRUE),
-           #   checkboxInput("GAM.STUDY", "Control for Study", TRUE))
-           ),
+             checkboxInput("Z.BINARIZE", "Binarize Z-Variable", FALSE),
+             tags$hr(),
+             selectInput("GAM.COVARIATES", "Control for Biocovariates:", "", multiple=TRUE))),
     column(8,
            tabsetPanel(
              type="tabs",
@@ -63,131 +50,12 @@ fluidPage(
                verbatimTextOutput("gam_check", placeholder=TRUE)),
              tabPanel(
                "Isocontours",
-               plotOutput("gam_contours", height="600px")))
-           )
-                       
-    #        tabsetPanel(type="tabs",
-    #                    tabPanel("Summary",
-    #                             h4("Description of selected data:"),
-    #                             tableOutput("summary_table"),
-    #                             plotOutput("subject_counts_by_study")),
-    #                    tabPanel("Histograms",
-    #                             plotOutput("x_histogram"),
-    #                             verbatimTextOutput("x_summary", placeholder=TRUE),
-    #                             plotOutput("y_histogram"),
-    #                             verbatimTextOutput("y_summary", placeholder=TRUE),
-    #                             plotOutput("z_histogram"),
-    #                             verbatimTextOutput("z_summary", placeholder=TRUE)),
-    #                    tabPanel("Scatterplots",
-    #                             plotOutput("xy_scatter", height="600px"),
-    #                             plotOutput("xz_scatter", height="600px"),
-    #                             plotOutput("yz_scatter", height="600px")),
-
-    #                    tabPanel("3D",
-    #                             plotOutput("gam_persp", height="600px"),
-    #                             wellPanel(h4("Perspective Settings"),
-    #                                       checkboxInput("PERSP.SE",
-    #                                                     "Plot Standard Error Surfaces",
-    #                                                     value=FALSE),
-    #                                       checkboxInput("PERSP.POINTS",
-    #                                                     "Plot Data Points",
-    #                                                     value=FALSE),
-    #                                       sliderInput("PERSP.EXCLUSION",
-    #                                                   "Grid Exclusion Distance",
-    #                                                   min=0, max=0.5, value=0.1, step=0.01),
-    #                                       sliderInput("PERSP.THETA",
-    #                                                   "Horizontal Rotation",
-    #                                                   min=-360, max=0, value=-30, step=15),
-    #                                       sliderInput("PERSP.PHI",
-    #                                                   "Vertical Rotation",
-    #                                                   min=0, max=360, value=15, step=15))
-    #                             ),
-    #                    tabPanel("Contours",
-    #                             plotOutput("gam_contours", height="800px"),
-    #                             wellPanel(h4("[TESTING] New Settings"),
-    #                                       sliderInput("CONTOURS.SE",
-    #                                                   "Show Confidence Bands: Number of SEs",
-    #                                                   min=0, max=5, value=0, step=0.05),
-    #                                       checkboxInput("CONTOURS.MASK",
-    #                                                     "Mask Regions Where Function is Likely Not Increasing/Decreasing",
-    #                                                     value=FALSE),
-    #                                       sliderInput("CONTOURS.MASKALPHA",
-    #                                                   "Mask Transparency",
-    #                                                   min=0, max=1, value=0.75, step=0.05),
-    #                                       selectInput("CONTOURS.LABELMETHOD",
-    #                                                   "Contour Labels Position",
-    #                                                   contour.methods, width="250px"),
-    #                                       fluidRow(column(6, "Predict Z-Variable (Red X)",
-    #                                                       numericInput("CONTOURS.XVAL1",
-    #                                                                    "Value of X-Variable to Predict",
-    #                                                                    NA, width="250px"),
-    #                                                       numericInput("CONTOURS.YVAL1",
-    #                                                                    "Value of Y-Variable to Predict",
-    #                                                                    NA, width="250px")),
-    #                                                column(6, "Predict Z-Variable (Blue X)",
-    #                                                       numericInput("CONTOURS.XVAL2",
-    #                                                                    "Value of X-Variable to Predict",
-    #                                                                    NA, width="250px"),
-    #                                                       numericInput("CONTOURS.YVAL2",
-    #                                                                    "Value of Y-Variable to Predict",
-    #                                                                    NA, width="250px"))),
-    #                                       fluidRow(column(6, "Predict Z-Variable (Red Triangle)",
-    #                                                       numericInput("CONTOURS.XVAL3",
-    #                                                                    "Value of X-Variable to Predict",
-    #                                                                    NA, width="250px"),
-    #                                                       numericInput("CONTOURS.YVAL3",
-    #                                                                    "Value of Y-Variable to Predict",
-    #                                                                    NA, width="250px")),
-    #                                                column(6, "Predict Z-Variable (Blue Triangle)",
-    #                                                       numericInput("CONTOURS.XVAL4",
-    #                                                                    "Value of X-Variable to Predict",
-    #                                                                    NA, width="250px"),
-    #                                                       numericInput("CONTOURS.YVAL4",
-    #                                                                    "Value of Y-Variable to Predict",
-    #                                                                    NA, width="250px")))
-    #                                       ),
-    #                             wellPanel(h4("Contours Settings"),
-    #                                       checkboxInput("CONTOURS.POINTS",
-    #                                                     "Plot Data Points",
-    #                                                     value=TRUE),
-    #                                       checkboxInput("CONTOURS.POINTCOLORS",
-    #                                                     "Color Data Points (if plotted)",
-    #                                                     value=FALSE),
-    #                                       checkboxInput("CONTOURS.RSQ",
-    #                                                     "Include R-Sqaure of Individual GAMs",
-    #                                                     value=FALSE),
-    #                                       sliderInput("CONTOURS.EXCLUSION",
-    #                                                   "Grid Exclusion Distance",
-    #                                                   min=0, max=0.5, value=0.1, step=0.01),
-    #                                       sliderInput("CONTOURS.NLEVELS",
-    #                                                   "Number of Contours",
-    #                                                   min=1, max=30, value=10, step=1),
-    #                                       sliderInput("CONTOURS.POINTSIZE",
-    #                                                   "Point Size (if plotted)",
-    #                                                   min=0, max=2, value=0.6, step=0.1))),
-    #                    tabPanel("Partial",
-    #                             plotOutput("gam_partial", height="600px"),
-    #                             wellPanel(h4("Partial Dependency Settings"),
-    #                               sliderInput("PARTIAL.ALPHA",
-    #                                           "CI Alpha (95% CI: alpha=0.05)",
-    #                                           min=0, max=1, value=0.05, step=0.05))
-    #                             ),
-    #                    tabPanel("Heatmap",
-    #                             plotOutput("knn_heatmap", height="800px"),
-    #                             wellPanel(h4("Contours Settings"),
-    #                                       sliderInput("HEATMAP.NEIGHBORS",
-    #                                                   "KNN Number of Neighbors (Resolution)",
-    #                                                   min=1, max=100, value=10, step=1),
-    #                                       checkboxInput("HEATMAP.POINTS",
-    #                                                     "Plot Data Points",
-    #                                                     value=TRUE),
-    #                                       sliderInput("HEATMAP.EXCLUSION",
-    #                                                   "Grid Exclusion Distance",
-    #                                                   min=0, max=0.5, value=0.1, step=0.01))
-    #                    ))
-    # )
-  )
-)
-
-
-
+               plotOutput("gam_contours", height="600px"),
+               wellPanel(
+                 h4("Isocontours Settings (New Data Only)"),
+                 checkboxInput("CONTOURS.POINTS", "Plot Data Points", value=TRUE),
+                 sliderInput(
+                   "CONTOURS.SE", "Number of Standard Errors",
+                   min=0, max=5, value=0, step=0.5),
+                 sliderInput(
+                   "CONTOURS.NLEVELS", "Number of Contours", min=1, max=30, value=10, step=1)))))))

@@ -19,23 +19,20 @@ The intended context of this application is in neuroimaging. A dummy dataset has
 * TOTALBRAIN_VOLUME
 
 ## Main Visualization
-The figure under the "Contours" tab offers a view of the relationship between the three selected variables.
+
+The figure under the "Isocontours" tab offers a view of the relationship between three variables of interest.
+
+One can examine previously-saved plots from the [paper](link_missing) to compare with the plots from ones own data.
+
+An exmple plot is shown below, from Figure 2A:
 
 ![alt text](img/1_contours_demo.png)
 
-## Installation
+## Installation and Quick Start
 
 1. Run `install.R` to ensure the necessary packages are installed.
-2. Copy your dataset into the `R/data/` folder so that it will be loaded properly.
-3. Update the Column Dictionary in `R/column\_dictionary` following the guide below:
-
-The values in "KEY\_NAME" are essential variables necessary to run the app like AGE and SEX. The values in "COL\_NAME" are the corresponding columns in your dataset, which may or may not be named equivalently. You should modify this file to adapt to your dataset. Additionally, you can hide columns from appearing in the application if you assign them the value of "REMOVE" in the KEY\_NAME column.
-
-4. Update `R/helpers.R` to identify the path to your dataset, the default variables selected in the application, and any essential label schemes like the use of "M", "F" to reflect males and females, respectively.
-
-## Quick Start
-
-After installation, open the script `R/UI.R` in RStudio and launch the app from the upper right corner, where a button will say "Run App".
+2. Open the script `R/UI.R` in RStudio.
+3. Launch the app from the upper right corner, where a button will say "Run App".
 
 ## Questions
 
