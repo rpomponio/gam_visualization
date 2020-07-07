@@ -1,6 +1,6 @@
 
 # HARDCODED PARAMETERS
-variable.transforms <- c("None", "Natural Log", "Cubic Root", "Binary")
+variable.transforms <- c("None", "Natural Log", "Cubic Root")
 presaved.fits <- c("2A: TMT vs Age, Brain-Age",
                    "2B: TMT vs Age, SPARE-AD",
                    "2C: CVLT vs Age, SPARE-AD",
