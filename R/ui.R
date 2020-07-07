@@ -1,7 +1,10 @@
 
 # HARDCODED PARAMETERS
 variable.transforms <- c("None", "Natural Log", "Cubic Root", "Binary")
-presaved.fits <- c("2A: TMT vs Age, Brain-Age")
+presaved.fits <- c("2A: TMT vs Age, Brain-Age",
+                   "2B: TMT vs Age, SPARE-AD",
+                   "2C: CVLT vs Age, SPARE-AD",
+                   "4A: TMT vs Age, Brain-Age [MCI/AD]")
 
 fluidPage(
   headerPanel("Interactive GAM Visualization"),
@@ -10,10 +13,8 @@ fluidPage(
            wellPanel(
              h4("Pre-saved Isocontours"),
              selectInput("PRESAVED.FIT", "Select Figure", presaved.fits),
-             checkboxInput("PLOT.PRESAVED.FIT", "Plot pre-saved isocontours", TRUE)),
-           # selectInput("DIAGNOSIS.GROUP", "Diagnosis Group", "", selected="", multiple=TRUE),
-           # selectInput("SEX.GROUP", "Sex Group", "", selected="", multiple=TRUE),
-           # sliderInput("AGE.RANGE", "Age Range", min=0, max=100, value=c(0, 100), step=1)),
+             radioButtons(
+               "PLOT.PRESAVED.FIT", "Plot type:", c("Pre-saved isocontours", "Newly-uploaded dataset"))),
           wellPanel(
              h4("Upload New Data"),
              fileInput(
@@ -26,6 +27,7 @@ fluidPage(
              selectInput("X.TRANSFORM", "X-Variable Transformation", variable.transforms),
              selectInput("Y.TRANSFORM", "Y-Variable Transformation", variable.transforms),
              checkboxInput("Z.BINARIZE", "Binarize Z-Variable", FALSE),
+             checkboxInput("Z.INVERSE", "Inverse Z-Variable", FALSE),
              tags$hr(),
              selectInput("GAM.COVARIATES", "Control for Biocovariates:", "", multiple=TRUE))),
     column(8,
@@ -55,7 +57,7 @@ fluidPage(
                  h4("Isocontours Settings (New Data Only)"),
                  checkboxInput("CONTOURS.POINTS", "Plot Data Points", value=TRUE),
                  sliderInput(
-                   "CONTOURS.SE", "Number of Standard Errors",
-                   min=0, max=5, value=0, step=0.5),
+                   "CONTOURS.SE", "Number of Standard Errors (Does not work with additional Covariates)",
+                   min=0, max=3, value=0, step=0.5),
                  sliderInput(
-                   "CONTOURS.NLEVELS", "Number of Contours", min=1, max=30, value=10, step=1)))))))
+                   "CONTOURS.NLEVELS", "Number of Contours", min=2, max=10, value=5, step=1)))))))

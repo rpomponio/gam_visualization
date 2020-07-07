@@ -1,6 +1,10 @@
 library(mgcv)
 options(warn=-1, stringsAsFactors=F)
-load("../private/fit_2a.rdata")
+
+load("../presaved_fits/fit_2a.rdata")
+load("../presaved_fits/fit_2b.rdata")
+load("../presaved_fits/fit_2c.rdata")
+load("../presaved_fits/fit_4a.rdata")
 
 function(input, output, session) {
   
@@ -16,8 +20,13 @@ function(input, output, session) {
     updateSelectInput(session, "X.COL", choices=colnames(uploadedData()), selected=colnames(uploadedData())[1])
     updateSelectInput(session, "Y.COL", choices=colnames(uploadedData()), selected=colnames(uploadedData())[2])
     updateSelectInput(session, "Z.COL", choices=colnames(uploadedData()), selected=colnames(uploadedData())[3])
-    #   updateSelectInput(session, "DIAGNOSIS.GROUP", choices=c(), selected="")
     updateSelectInput(session, "GAM.COVARIATES", choices=colnames(uploadedData()))
+  })
+  fitSelected <- reactive({
+    if (grepl("2A", input$PRESAVED.FIT)){ fit.2a }
+    else if (grepl("2B", input$PRESAVED.FIT)){fit.2b}
+    else if (grepl("2C", input$PRESAVED.FIT)){fit.2c}
+    else if (grepl("4A", input$PRESAVED.FIT)){fit.4a}
   })
   
   # transform uploaded dataset
@@ -50,8 +59,11 @@ function(input, output, session) {
         cases.sorted <- cases.all[order(cases.all)]
         case.positive <- cases.sorted[length(cases.sorted)]
         df[, input$Z.COL] <- as.numeric(original.values==case.positive)
+      } else if (input$Z.INVERSE){
+        original.values <- df[, input$Z.COL]
+        df[, input$Z.COL] <- -original.values
       }
-      df[!rowSums(is.na(df)), ]
+      df[rowSums(is.na(df[, c(input$X.COL, input$Y.COL, input$Z.COL)]))==0, ]
     }
   })
 
@@ -125,10 +137,10 @@ function(input, output, session) {
   
   # plot pre-saved isocontours or newly-fitted isocontours
   output$gam_contours <- renderPlot({
-    if (input$PLOT.PRESAVED.FIT){
+    if (input$PLOT.PRESAVED.FIT=="Pre-saved isocontours"){
       plt.title <- paste0(input$PRESAVED.FIT)
-      image(fit.2a$x, fit.2a$y, fit.2a$Z, col=cm.colors(10), main=plt.title, xlab="", ylab="")
-      contour(fit.2a$x, fit.2a$y, fit.2a$Z, nlevels=10, add=T, levels=fit.2a$levels, labcex=1.25)
+      image(fitSelected()$x, fitSelected()$y, fitSelected()$Z, col=cm.colors(10), main=plt.title, xlab="", ylab="")
+      contour(fitSelected()$x, fitSelected()$y, fitSelected()$Z, nlevels=10, add=T, levels=fitSelected()$levels, labcex=1.25)
     } else{
       plt.title <- paste0(input$Z.COL, " (N=", nrow(transformedData()),")")
       vis.gam(gamFit(), view=c(input$X.COL, input$Y.COL), type="response",

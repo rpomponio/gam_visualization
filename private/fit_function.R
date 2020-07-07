@@ -5,7 +5,7 @@ options(warn=-1)  # suppresses plot warnings
 
 fit.gam <- function(data, x.column.name, y.column.name, z.column.name,
                     z.transformation=NULL, include.study=F, include.education=F,
-                    include.sex=F, age.range=c(40, 90), gam.family=gaussian(),
+                    include.sex=F, age.range=c(40, 90), dx.group=c("CN"), gam.family=gaussian(),
                     X.LIM.CUSTOM=NULL, Y.LIM.CUSTOM=NULL, Z.LEVELS=NULL){
   # remove rows where variables are missing
   selected.data <- data
@@ -13,7 +13,7 @@ fit.gam <- function(data, x.column.name, y.column.name, z.column.name,
   selected.data <- selected.data[!is.na(selected.data[, y.column.name]), ]
   selected.data <- selected.data[!is.na(selected.data[, z.column.name]), ]
   # remove rows where subjects are not controls
-  selected.data <- subset(selected.data, DIAGNOSIS%in%c("CN"))
+  selected.data <- subset(selected.data, DIAGNOSIS%in%dx.group)
   # remove rows where subjects are outside age range
   selected.data <- subset(selected.data, AGE>=age.range[1] & AGE<=age.range[2])
   # remove rows where subjects do not have education
@@ -38,6 +38,8 @@ fit.gam <- function(data, x.column.name, y.column.name, z.column.name,
       selected.data[, z.column.name] <- sign(original.values)*abs(original.values)^(1/3)
     } else if (z.transformation=="naturallog"){
       selected.data[, z.column.name] <- log(selected.data[, z.column.name] + 1)
+    } else if (z.transformation=="inverse"){
+      selected.data[, z.column.name] <- -(selected.data[, z.column.name])
     }
   }
   # fix study to most commonly occurring study
