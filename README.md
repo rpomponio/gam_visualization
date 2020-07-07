@@ -13,8 +13,7 @@ The intended context of this application is in neuroimaging. A dummy dataset has
 * AGE
 * SEX
 * DIAGNOSIS
-* CS1 (Cognitive test performance)
-* CS2
+* TMT_COMBINED (Cognitive test performance)
 * ICV (Intravranial volume)
 * TOTALBRAIN_VOLUME
 
@@ -24,7 +23,7 @@ The figure under the "Isocontours" tab offers a view of the relationship between
 
 One can examine previously-saved plots from the [paper](link_missing) to compare with the plots from ones own data.
 
-An exmple plot is shown below, from Figure 2A:
+An exmple plot is shown below, from the dummy dataset:
 
 ![alt text](img/1_contours_demo.png)
 
