@@ -4,7 +4,21 @@ variable.transforms <- c("None", "Natural Log", "Cubic Root")
 presaved.fits <- c("2A: TMT vs Age, Brain-Age",
                    "2B: TMT vs Age, SPARE-AD",
                    "2C: CVLT vs Age, SPARE-AD",
-                   "4A: TMT vs Age, Brain-Age [MCI/AD]")
+                   "3A: SPARE-BA vs Age, WMH Volume",
+                   "3B: SPARE-AD vs Age, WMH Volume",
+                   "3B: SPARE-AD vs Age, WMH Volume",
+                   "3C: TMT vs Age, WMH Volume",
+                   "3D: CVLT vs Age, WMH Volume",
+                   "3E: ABeta vs Age, WMH Volume",
+                   "4A: TMT vs Age, Brain-Age [MCI/AD]",
+                   "4B: MMSE vs Age, Brain-Age [MCI/AD]",
+                   "4C: TMT vs Age, SPARE-AD [MCI/AD]",
+                   "4D: MMSE vs Age, SPARE-AD [MCI/AD]",
+                   "4E: TMT vs Age, WMH Volume [MCI/AD]",
+                   "4F: MMSE vs Age, WMH Volume [MCI/AD]",
+                   "4H: Brain-Age vs Age, WMH Volume [MCI/AD]",
+                   "4I: SPARE-AD vs Age, WMH Volume [MCI/AD]",
+                   "4J: ABeta vs Age, WMH Volume [MCI/AD]")
 
 fluidPage(
   headerPanel("Interactive GAM Visualization"),

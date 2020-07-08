@@ -13,7 +13,8 @@ The intended context of this application is in neuroimaging. A dummy dataset has
 * AGE
 * SEX
 * DIAGNOSIS
-* TMT_COMBINED (Cognitive test performance)
+* TRAILMAKING (Cognitive test performance)
+* MMSE (Cognitive test performance)
 * ICV (Intravranial volume)
 * TOTALBRAIN_VOLUME
 

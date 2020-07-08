@@ -1,10 +1,10 @@
 library(mgcv)
 options(warn=-1, stringsAsFactors=F)
 
-load("../presaved_fits/fit_2a.rdata")
-load("../presaved_fits/fit_2b.rdata")
-load("../presaved_fits/fit_2c.rdata")
-load("../presaved_fits/fit_4a.rdata")
+# load pre-saved fits
+for (f in list.files("../presaved_fits/")){
+  load(paste0("../presaved_fits/", f))
+}
 
 function(input, output, session) {
   
@@ -26,7 +26,20 @@ function(input, output, session) {
     if (grepl("2A", input$PRESAVED.FIT)){ fit.2a }
     else if (grepl("2B", input$PRESAVED.FIT)){fit.2b}
     else if (grepl("2C", input$PRESAVED.FIT)){fit.2c}
+    else if (grepl("3A", input$PRESAVED.FIT)){fit.3a}
+    else if (grepl("3B", input$PRESAVED.FIT)){fit.3b}
+    else if (grepl("3C", input$PRESAVED.FIT)){fit.3c}
+    else if (grepl("3D", input$PRESAVED.FIT)){fit.3d}
+    else if (grepl("3E", input$PRESAVED.FIT)){fit.3e}
     else if (grepl("4A", input$PRESAVED.FIT)){fit.4a}
+    else if (grepl("4B", input$PRESAVED.FIT)){fit.4b}
+    else if (grepl("4C", input$PRESAVED.FIT)){fit.4c}
+    else if (grepl("4D", input$PRESAVED.FIT)){fit.4d}
+    else if (grepl("4E", input$PRESAVED.FIT)){fit.4e}
+    else if (grepl("4F", input$PRESAVED.FIT)){fit.4f}
+    else if (grepl("4H", input$PRESAVED.FIT)){fit.4h}
+    else if (grepl("4I", input$PRESAVED.FIT)){fit.4i}
+    else if (grepl("4J", input$PRESAVED.FIT)){fit.4j}
   })
   
   # transform uploaded dataset

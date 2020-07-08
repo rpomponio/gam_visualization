@@ -83,7 +83,7 @@ fit.gam <- function(data, x.column.name, y.column.name, z.column.name,
   df.pred <- expand.grid(x=x, y=y)
   colnames(df.pred) <- c(x.column.name, y.column.name)
   df.pred <- cbind(df.pred, cond.list)
-  df.pred$z <- predict(gam.fit, newdata=df.pred)
+  df.pred$z <- predict(gam.fit, newdata=df.pred, type="response")
   exclude.points <- exclude.too.far(
     df.pred[, x.column.name], df.pred[, y.column.name],
     selected.data[, x.column.name],selected.data[, y.column.name], dist=0.05)
