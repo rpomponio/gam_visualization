@@ -2,8 +2,8 @@ library(mgcv)
 options(warn=-1, stringsAsFactors=F)
 
 # load pre-saved fits
-for (f in list.files("../presaved_fits/")){
-  load(paste0("../presaved_fits/", f))
+for (f in list.files("presaved_fits/")){
+  load(paste0("presaved_fits/", f))
 }
 
 function(input, output, session) {
@@ -87,7 +87,11 @@ function(input, output, session) {
     hist(transformedData()[, input$X.COL], col="gray", breaks=50, main=plt.title, xlab="")
   })
   output$x_summary <- renderPrint({
-    summary(transformedData()[, input$X.COL])
+    if (is.null(input$file1)){
+      cat("Upload a csv first using 'Upload New Data'")
+    } else{
+      summary(transformedData()[, input$X.COL])
+    }
   })
   output$y_histogram <- renderPlot({
     par(cex=1.5)
